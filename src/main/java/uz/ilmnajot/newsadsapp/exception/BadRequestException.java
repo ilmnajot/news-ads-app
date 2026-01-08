@@ -1,16 +1,14 @@
 package uz.ilmnajot.newsadsapp.exception;
 
-
 import lombok.Getter;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ResponseStatus;
 
 @Getter
-@ResponseStatus(HttpStatus.NOT_FOUND)
-public class ResourceNotFoundException extends RuntimeException {
+@ResponseStatus(HttpStatus.BAD_REQUEST)
+public class BadRequestException extends RuntimeException {
 
-    public ResourceNotFoundException(String message) {
+    public BadRequestException(String message) {
         super(message);
     }
-
 }

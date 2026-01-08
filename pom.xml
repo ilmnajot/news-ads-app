@@ -85,14 +85,14 @@
             <artifactId>spring-security-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.flywaydb</groupId>-->
-<!--            <artifactId>flyway-core</artifactId>-->
-<!--        </dependency>-->
-<!--        <dependency>-->
-<!--            <groupId>org.flywaydb</groupId>-->
-<!--            <artifactId>flyway-database-postgresql</artifactId>-->
-<!--        </dependency>-->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
         <!-- Maven pom.xml -->
         <dependency>
             <groupId>io.github.cdimascio</groupId>
@@ -136,7 +136,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-            <version>2.3.0</version>
+            <version>2.7.0</version>
         </dependency>
 
         <!-- HTML Sanitization -->
@@ -164,6 +164,17 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
             <version>1.11.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/javax.management/jmx -->
+        <dependency>
+            <groupId>jakarta.xml.bind</groupId>
+            <artifactId>jakarta.xml.bind-api</artifactId>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/org.springframework.integration/spring-integration-jmx -->
+        <dependency>
+            <groupId>org.springframework.integration</groupId>
+            <artifactId>spring-integration-jmx</artifactId>
+            <version>7.0.1</version>
         </dependency>
 
         <!-- Jsoup for HTML sanitization -->

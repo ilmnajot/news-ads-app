@@ -32,8 +32,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final UserDetailsService userDetailsService;
-    private final PasswordEncoder passwordEncoder;
     private final JwtFilter jwtFilter;
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
@@ -61,13 +59,15 @@ public class SecurityConfig {
 
     private static final String[] WHITE_LIST = {
 
-            "/swagger-ui/**",
-            "/swagger-ui.html",
+            "/api/auth/**",                    // Your auth endpoints
+            "/v3/api-docs/**",                 // OpenAPI JSON
+            "/swagger-ui/**",                  // Swagger UI
+            "/swagger-ui.html",                // Swagger UI HTML
+            "/swagger-resources/**",           // Swagger resources
+            "/configuration/ui",               // Swagger config
+            "/configuration/security",         // Swagger security config
             "/webjars/**",
-            "/swagger-resources/**",
-            "/v3/api-docs/**",
-            "/v2/api-docs",
-            "/actuator/health",
+            "/actuator/**",
             "/api/v1/public/**",
             "/api/v1/admin/auth/**",
 
@@ -84,11 +84,7 @@ public class SecurityConfig {
 //        authProvider.setPasswordEncoder(passwordEncoder);
 //        return authProvider;
 //    }
-//
-//    @Bean
-//    public AuthenticationManager authenticationManager(AuthenticationConfiguration config) throws Exception {
-//        return config.getAuthenticationManager();
-//    }
+
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
