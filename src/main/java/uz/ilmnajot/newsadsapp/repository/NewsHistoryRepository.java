@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface NewsHistoryRepository extends JpaRepository<NewsHistory, Long> {
-    List<NewsHistory> findByNewsIdOrderByChangedAtDesc(Long newsId);
+    List<NewsHistory> findByNewsIdOrderByChangedByDesc(Long newsId);
 }
 

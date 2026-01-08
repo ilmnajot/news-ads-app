@@ -17,27 +17,32 @@ import java.util.function.Function;
 
 @Component
 @RequiredArgsConstructor
-public class JwtTokenProvider {
+public class JwtProvider {
 
     private final JwtProperties jwtProperties;
 
+    //done
     private SecretKey getSigningKey() {
         return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
     }
 
+    //done
     public String getUsernameFromToken(String token) {
         return getClaimFromToken(token, Claims::getSubject);
     }
 
+    //done
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
 
+    //done
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
-        final Claims claims = getAllClaimsFromToken(token);
+        final Claims claims = this.getAllClaimsFromToken(token);
         return claimsResolver.apply(claims);
     }
 
+    //done
     private Claims getAllClaimsFromToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
@@ -46,21 +51,29 @@ public class JwtTokenProvider {
                 .getPayload();
     }
 
+    //done
     private Boolean isTokenExpired(String token) {
-        final Date expiration = getExpirationDateFromToken(token);
+        final Date expiration = this.getExpirationDateFromToken(token);
         return expiration.before(new Date());
     }
 
+    //done
     public String generateAccessToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername(), jwtProperties.getAccessExpiration());
+        return this.createToken(
+                new HashMap<>(),
+                userDetails.getUsername(),
+                jwtProperties.getAccessExpiration());
     }
 
+    //done
     public String generateRefreshToken(UserDetails userDetails) {
-        Map<String, Object> claims = new HashMap<>();
-        return createToken(claims, userDetails.getUsername(), jwtProperties.getRefreshExpiration());
+        return this.createToken(
+                new HashMap<>(),
+                userDetails.getUsername(),
+                jwtProperties.getRefreshExpiration());
     }
 
+    //done
     private String createToken(Map<String, Object> claims, String subject, Long expiration) {
         return Jwts.builder()
                 .claims(claims)
@@ -71,8 +84,9 @@ public class JwtTokenProvider {
                 .compact();
     }
 
+    //done
     public Boolean validateToken(String token, UserDetails userDetails) {
-        final String username = getUsernameFromToken(token);
+        final String username = this.getUsernameFromToken(token);
         return (username.equals(userDetails.getUsername()) && !isTokenExpired(token));
     }
 }

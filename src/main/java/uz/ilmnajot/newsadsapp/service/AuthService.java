@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import uz.ilmnajot.newsadsapp.config.JwtProperties;
 import uz.ilmnajot.newsadsapp.dto.request.LoginRequest;
 import uz.ilmnajot.newsadsapp.dto.response.JwtResponse;
-import uz.ilmnajot.newsadsapp.security.JwtTokenProvider;
+import uz.ilmnajot.newsadsapp.security.JwtProvider;
 
 @Service
 @RequiredArgsConstructor
@@ -17,7 +17,7 @@ public class AuthService {
 
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
-    private final JwtTokenProvider tokenProvider;
+    private final JwtProvider tokenProvider;
     private final JwtProperties jwtProperties;
 
     public JwtResponse login(LoginRequest request) {

@@ -171,7 +171,7 @@ public class NewsService {
     }
 
     public List<NewsHistory> getNewsHistory(Long newsId) {
-        return newsHistoryRepository.findByNewsIdOrderByChangedAtDesc(newsId);
+        return newsHistoryRepository.findByNewsIdOrderByChangedByDesc(newsId);
     }
 
     private void recordStatusChange(News news, String fromStatus, String toStatus, User user) {

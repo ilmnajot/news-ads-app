@@ -14,6 +14,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
     private final UserRepository userRepository;
 
+    //done
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         User user = userRepository.findByUsername(username)
@@ -22,7 +23,6 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         if (!user.isEnabled()) {
             throw new UsernameNotFoundException("User is disabled: " + username);
         }
-        
         return user;
     }
 }
