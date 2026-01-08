@@ -6,6 +6,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.entity.News;
+import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 import uz.ilmnajot.newsadsapp.repository.NewsRepository;
 
 import java.time.LocalDateTime;
@@ -22,10 +23,10 @@ public class NewsScheduler {
     @Transactional
     public void autoPublishNews() {
         LocalDateTime now = LocalDateTime.now();
-        List<News> newsToPublish = newsRepository.findNewsToPublish(News.Status.REVIEW, now);
+        List<News> newsToPublish = newsRepository.findNewsToPublish(NewsStatus.REVIEW, now);
         
         for (News news : newsToPublish) {
-            news.setStatus(News.Status.PUBLISHED);
+            news.setStatus(NewsStatus.PUBLISHED);
             newsRepository.save(news);
             log.info("Auto-published news ID: {}", news.getId());
         }
@@ -39,10 +40,10 @@ public class NewsScheduler {
     @Transactional
     public void autoUnpublishNews() {
         LocalDateTime now = LocalDateTime.now();
-        List<News> newsToUnpublish = newsRepository.findNewsToUnpublish(News.Status.PUBLISHED, now);
+        List<News> newsToUnpublish = newsRepository.findNewsToUnpublish(NewsStatus.PUBLISHED, now);
         
         for (News news : newsToUnpublish) {
-            news.setStatus(News.Status.UNPUBLISHED);
+            news.setStatus(NewsStatus.UNPUBLISHED);
             newsRepository.save(news);
             log.info("Auto-unpublished news ID: {}", news.getId());
         }

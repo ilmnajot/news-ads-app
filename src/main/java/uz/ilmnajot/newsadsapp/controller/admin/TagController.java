@@ -1,72 +1,59 @@
 package uz.ilmnajot.newsadsapp.controller.admin;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import uz.ilmnajot.newsadsapp.entity.Tag;
-import uz.ilmnajot.newsadsapp.repository.TagRepository;
-import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
-
-import java.util.Map;
+import uz.ilmnajot.newsadsapp.dto.TagDto;
+import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
+import uz.ilmnajot.newsadsapp.service.TagService;
 
 @RestController
 @RequestMapping("/api/v1/admin/tags")
 @RequiredArgsConstructor
 public class TagController {
 
-    private final TagRepository tagRepository;
+    private final TagService tagService;
+
 
     @GetMapping
-    public ResponseEntity<Page<Tag>> getAllTags(Pageable pageable) {
-        return ResponseEntity.ok(tagRepository.findAll(pageable));
+    public ResponseEntity<ApiResponse> getAllTags(
+            @RequestParam(name = "page", defaultValue = "0") int page,
+            @RequestParam(name = "size", defaultValue = "20") int size) {
+        ApiResponse apiResponse = this.tagService.getAllTags(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+
     }
 
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<Tag> createTag(@RequestBody Map<String, String> request) {
-        String code = request.get("code");
-        if (code == null || code.isEmpty()) {
-            throw new IllegalArgumentException("Tag code is required");
-        }
-        
-        if (tagRepository.existsByCode(code)) {
-            throw new IllegalArgumentException("Tag with code already exists: " + code);
-        }
-        
-        Tag tag = Tag.builder()
-                .code(code)
-                .isActive(true)
-                .build();
-        
-        return ResponseEntity.status(HttpStatus.CREATED).body(tagRepository.save(tag));
+    public HttpEntity<ApiResponse> addTag(@RequestBody TagDto.AddTag dto) {
+        ApiResponse apiResponse = this.tagService.addTag(dto);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<Tag> updateTag(@PathVariable Long id, 
-                                          @RequestBody Map<String, Object> updates) {
-        Tag tag = tagRepository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Tag not found"));
-        
-        if (updates.containsKey("isActive")) {
-            tag.setIsActive(Boolean.parseBoolean(updates.get("isActive").toString()));
-        }
-        
-        return ResponseEntity.ok(tagRepository.save(tag));
+    public ResponseEntity<ApiResponse> updateTag(@PathVariable Long id,
+                                                 @RequestBody TagDto.UpdateTag dto) {
+        ApiResponse apiResponse = this.tagService.updateTag(id, dto);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> deleteTag(@PathVariable Long id) {
-        if (!tagRepository.existsById(id)) {
-            throw new ResourceNotFoundException("Tag not found");
-        }
-        tagRepository.deleteById(id);
-        return ResponseEntity.noContent().build();
+    public HttpEntity<?> inActivateTag(@PathVariable Long id) {
+        ApiResponse apiResponse = this.tagService.deleteTag(id);
+        return ResponseEntity.status(apiResponse.getStatus()).build();
     }
+    @GetMapping("/{id}")
+    public HttpEntity<ApiResponse> getTagById(@PathVariable Long id) {
+        ApiResponse apiResponse = this.tagService.getTagById(id);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
+
 }
 

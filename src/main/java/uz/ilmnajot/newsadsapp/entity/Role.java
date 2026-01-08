@@ -11,14 +11,10 @@ import org.springframework.security.core.GrantedAuthority;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Role extends BaseEntity implements GrantedAuthority {
+public class Role extends BaseEntity{
     
     @Column(nullable = false, unique = true)
     private String name;
 
-    @Override
-    public String getAuthority() {
-        return "ROLE_" + name;
-    }
 }
 

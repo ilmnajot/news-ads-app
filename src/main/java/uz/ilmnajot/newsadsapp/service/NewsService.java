@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.dto.request.NewsCreateRequest;
 import uz.ilmnajot.newsadsapp.dto.response.NewsResponse;
 import uz.ilmnajot.newsadsapp.entity.*;
+import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
 import uz.ilmnajot.newsadsapp.repository.*;
 import uz.ilmnajot.newsadsapp.util.HtmlSanitizer;
@@ -30,13 +31,15 @@ public class NewsService {
     private final TagRepository tagRepository;
     private final MediaRepository mediaRepository;
     private final UserRepository userRepository;
+    private final SlugGenerator slugGenerator;
 
     @Transactional
     public NewsResponse createNews(NewsCreateRequest request) {
+
         User currentUser = getCurrentUser();
         News news = News.builder()
                 .author(currentUser)
-                .status(News.Status.valueOf(request.getStatus().toUpperCase()))
+                .status(NewsStatus.valueOf(request.getStatus().toUpperCase()))
                 .isFeatured(request.getIsFeatured() != null && request.getIsFeatured())
                 .publishAt(request.getPublishAt())
                 .unpublishAt(request.getUnpublishAt())
@@ -65,12 +68,12 @@ public class NewsService {
 
             String slug = tr.getSlug();
             if (slug == null || slug.isEmpty()) {
-                slug = SlugGenerator.generate(tr.getTitle());
+                slug = slugGenerator.generateSlug(tr.getTitle());
             }
 
             // Check uniqueness and generate unique slug
-            slug = SlugGenerator.generateUnique(slug, s -> 
-                newsTranslationRepository.existsBySlugAndLang(s, lang));
+//            slug = SlugGenerator.generateUnique(slug, s ->
+//                newsTranslationRepository.existsBySlugAndLang(s, lang));
 
             NewsTranslation translation = NewsTranslation.builder()
                     .news(news)
@@ -107,7 +110,7 @@ public class NewsService {
         Page<News> newsPage;
         
         if (status != null) {
-            newsPage = newsRepository.findByStatus(News.Status.valueOf(status.toUpperCase()), pageable);
+            newsPage = newsRepository.findByStatus(NewsStatus.valueOf(status.toUpperCase()), pageable);
         } else if (authorId != null) {
             newsPage = newsRepository.findByAuthorId(authorId, pageable);
         } else if (categoryId != null) {
@@ -132,8 +135,8 @@ public class NewsService {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
         
-        News.Status fromStatus = news.getStatus();
-        news.setStatus(News.Status.valueOf(toStatus.toUpperCase()));
+        NewsStatus fromStatus = news.getStatus();
+        news.setStatus(NewsStatus.valueOf(toStatus.toUpperCase()));
         
         User currentUser = getCurrentUser();
         recordStatusChange(news, fromStatus.name(), toStatus, currentUser);

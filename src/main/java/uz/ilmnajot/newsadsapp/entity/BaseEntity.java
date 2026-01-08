@@ -25,9 +25,11 @@ public abstract class BaseEntity implements Serializable {
     private Long id;
 
     @CreatedBy
+    @Column(updatable = false)
     private Long createdBy;
 
     @LastModifiedBy
+    @Column(updatable = false)
     private Long updatedBy;
 
     @CreatedDate

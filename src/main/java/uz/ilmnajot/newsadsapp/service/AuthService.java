@@ -6,7 +6,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
-import uz.ilmnajot.newsadsapp.config.JwtProperties;
 import uz.ilmnajot.newsadsapp.dto.request.LoginRequest;
 import uz.ilmnajot.newsadsapp.dto.response.JwtResponse;
 import uz.ilmnajot.newsadsapp.security.JwtProvider;
@@ -18,7 +17,6 @@ public class AuthService {
     private final AuthenticationManager authenticationManager;
     private final UserDetailsService userDetailsService;
     private final JwtProvider tokenProvider;
-    private final JwtProperties jwtProperties;
 
     public JwtResponse login(LoginRequest request) {
         authenticationManager.authenticate(
@@ -33,7 +31,8 @@ public class AuthService {
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
-                .expiresIn(jwtProperties.getAccessExpiration() / 1000) // in seconds
+                .accessTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(accessToken))
+                .refreshTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(refreshToken))
                 .build();
     }
 
@@ -51,7 +50,8 @@ public class AuthService {
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
-                .expiresIn(jwtProperties.getAccessExpiration() / 1000)
+                .accessTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(newAccessToken))
+                .refreshTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(refreshToken))
                 .build();
     }
 }

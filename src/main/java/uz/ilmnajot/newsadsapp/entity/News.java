@@ -2,6 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,10 +16,6 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class News extends BaseEntity {
-
-    public enum Status {
-        DRAFT, REVIEW, PUBLISHED, UNPUBLISHED, ARCHIVED
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)
@@ -35,7 +32,7 @@ public class News extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private Status status = Status.DRAFT;
+    private NewsStatus status = NewsStatus.DRAFT;
 
     @Column(name = "is_featured")
     @Builder.Default

@@ -12,5 +12,6 @@ public interface TagRepository extends JpaRepository<Tag, Long> {
     Optional<Tag> findByCode(String code);
     boolean existsByCode(String code);
     List<Tag> findByIsActiveTrue();
+    Optional<Tag> findTagByIdAndIsActiveTrue(Long id);
 }
 

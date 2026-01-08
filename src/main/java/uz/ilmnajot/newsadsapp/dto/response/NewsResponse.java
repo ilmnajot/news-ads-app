@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import uz.ilmnajot.newsadsapp.entity.News;
+import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +23,7 @@ public class NewsResponse {
     private String categoryTitle;
     private Long coverMediaId;
     private String coverMediaUrl;
-    private News.Status status;
+    private NewsStatus status;
     private Boolean isFeatured;
     private Boolean isDeleted;
     private LocalDateTime publishAt;

@@ -7,6 +7,7 @@ import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.dto.response.NewsResponse;
+import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 import uz.ilmnajot.newsadsapp.repository.NewsRepository;
 import uz.ilmnajot.newsadsapp.repository.NewsTranslationRepository;
 import uz.ilmnajot.newsadsapp.entity.News;
@@ -35,7 +36,7 @@ public class PublicNewsController {
         
         LocalDateTime now = LocalDateTime.now();
         Page<News> newsPage = newsRepository.findPublishedNewsByLang(
-                News.Status.PUBLISHED, lang, now, pageable);
+                NewsStatus.PUBLISHED, lang, now, pageable);
         
         Page<NewsResponse> response = newsPage.map(newsService::mapToResponse);
         return ResponseEntity.ok(response);

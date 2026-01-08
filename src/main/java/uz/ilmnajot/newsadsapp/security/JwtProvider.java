@@ -1,12 +1,13 @@
 package uz.ilmnajot.newsadsapp.security;
 
+import com.fasterxml.jackson.databind.node.LongNode;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
-import uz.ilmnajot.newsadsapp.config.JwtProperties;
 
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
@@ -19,11 +20,18 @@ import java.util.function.Function;
 @RequiredArgsConstructor
 public class JwtProvider {
 
-    private final JwtProperties jwtProperties;
+    @Value("${app.jwt.secret}")
+    private String secret;
+
+    @Value("${app.access.expiration}")
+    private Long accessExpirationTime;
+
+    @Value("${app.refresh.expiration}")
+    private Long refreshExpirationTime;
 
     //done
     private SecretKey getSigningKey() {
-        return Keys.hmacShaKeyFor(jwtProperties.getSecret().getBytes(StandardCharsets.UTF_8));
+        return Keys.hmacShaKeyFor(this.secret.getBytes(StandardCharsets.UTF_8));
     }
 
     //done
@@ -35,6 +43,7 @@ public class JwtProvider {
     public Date getExpirationDateFromToken(String token) {
         return getClaimFromToken(token, Claims::getExpiration);
     }
+    //done
 
     //done
     public <T> T getClaimFromToken(String token, Function<Claims, T> claimsResolver) {
@@ -62,7 +71,7 @@ public class JwtProvider {
         return this.createToken(
                 new HashMap<>(),
                 userDetails.getUsername(),
-                jwtProperties.getAccessExpiration());
+                this.accessExpirationTime);
     }
 
     //done
@@ -70,7 +79,7 @@ public class JwtProvider {
         return this.createToken(
                 new HashMap<>(),
                 userDetails.getUsername(),
-                jwtProperties.getRefreshExpiration());
+               this.refreshExpirationTime);
     }
 
     //done

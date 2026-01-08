@@ -23,10 +23,10 @@ public class CategoryTranslation extends BaseEntity {
     @Column(nullable = false, length = 5)
     private String lang;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String title;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String slug;
 
     @Column(columnDefinition = "TEXT")

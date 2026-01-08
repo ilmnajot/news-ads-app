@@ -3,20 +3,20 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Entity
-@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@Table(name = "users")
+//done
 public class User extends BaseEntity implements UserDetails {
 
     @Column(nullable = false, unique = true, length = 50)
@@ -29,7 +29,7 @@ public class User extends BaseEntity implements UserDetails {
     private String fullName;
 
     @Column(name = "password_hash", nullable = false)
-    private String passwordHash;
+    private String password;
 
     @Column(name = "is_active")
     private Boolean isActive = true;
@@ -44,19 +44,20 @@ public class User extends BaseEntity implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return roles != null
-                ? new HashSet<>(roles)
-                : Set.of();
+        return roles
+                .stream()
+                .map(role->new SimpleGrantedAuthority(role.getName()))
+                .collect(Collectors.toSet());
     }
 
     @Override
     public String getPassword() {
-        return passwordHash;
+        return this.password;
     }
 
     @Override
     public String getUsername() {
-        return username;
+        return this.username;
     }
 
     @Override
