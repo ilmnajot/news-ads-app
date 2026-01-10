@@ -67,7 +67,9 @@ public class SecurityConfig {
     };
     //to test for now
     private static final String[] BLACK_LIST = {
-            "/api/v1/admin/categories/**"
+            "/api/v1/admin/categories/**", //rm
+            "/api/v1/admin/media/**",
+            "/api/v1/admin/auth/register"
     };
 
 //    @Bean

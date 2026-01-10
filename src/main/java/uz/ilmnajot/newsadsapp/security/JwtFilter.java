@@ -36,7 +36,7 @@ public class JwtFilter extends OncePerRequestFilter {
         try {
             String jwt = getJwtFromRequest(request);
             // Agar token yo‘q bo‘lsa → davom et
-            if (jwt == null || !jwt.startsWith("Bearer ")) {
+            if (jwt == null) {
                 filterChain.doFilter(request, response);
                 return;
             }
@@ -50,7 +50,7 @@ public class JwtFilter extends OncePerRequestFilter {
                     log.error("INVALID JWT: {}", e.getMessage());
                 }
             }
-            log.debug(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
+//            log.debug(SecurityContextHolder.getContext().getAuthentication().getAuthorities().toString());
             if (username != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 

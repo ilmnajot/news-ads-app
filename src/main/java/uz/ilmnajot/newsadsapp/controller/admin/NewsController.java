@@ -9,7 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import uz.ilmnajot.newsadsapp.dto.request.NewsCreateRequest;
+import uz.ilmnajot.newsadsapp.dto.NewsCreateRequest;
 import uz.ilmnajot.newsadsapp.dto.response.NewsResponse;
 import uz.ilmnajot.newsadsapp.entity.NewsHistory;
 import uz.ilmnajot.newsadsapp.service.NewsService;

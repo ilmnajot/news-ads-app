@@ -2,10 +2,11 @@ package uz.ilmnajot.newsadsapp.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import uz.ilmnajot.newsadsapp.dto.request.LoginRequest;
+import uz.ilmnajot.newsadsapp.dto.UserDto;
+import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.dto.response.JwtResponse;
 import uz.ilmnajot.newsadsapp.service.AuthService;
 
@@ -16,9 +17,20 @@ public class AuthController {
 
     private final AuthService authService;
 
+    @PostMapping("/register")
+    public HttpEntity<ApiResponse> registerUser(@RequestBody UserDto.AddUserDto dto) {
+        ApiResponse apiResponse = this.authService.registerUser(dto);
+        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    }
+
+//    @PostMapping("/sign-up")
+//    public HttpEntity<ApiResponse> signUp(@RequestBody UserDto.SignUpDto dto) {
+//        ApiResponse apiResponse = this.authService.signUp(dto);
+//        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+//    }
     @PostMapping("/login")
-    public ResponseEntity<JwtResponse> login(@Valid @RequestBody LoginRequest request) {
-        JwtResponse response = authService.login(request);
+    public ResponseEntity<JwtResponse> login(@Valid @RequestBody UserDto.LoginDto dto) {
+        JwtResponse response = authService.login(dto);
         return ResponseEntity.ok(response);
     }
 

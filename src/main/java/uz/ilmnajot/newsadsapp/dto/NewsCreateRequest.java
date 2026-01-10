@@ -1,4 +1,4 @@
-package uz.ilmnajot.newsadsapp.dto.request;
+package uz.ilmnajot.newsadsapp.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -8,6 +8,7 @@ import lombok.Data;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Data
 public class NewsCreateRequest {
@@ -28,7 +29,7 @@ public class NewsCreateRequest {
     @Size(min = 1, message = "At least one translation is required")
     private Map<String, NewsTranslationRequest> translations;
     
-    private List<String> tagCodes;
+    private Set<String> tagCodes;
     
     @Data
     public static class NewsTranslationRequest {

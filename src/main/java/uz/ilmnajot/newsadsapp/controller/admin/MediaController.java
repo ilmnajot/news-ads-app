@@ -15,11 +15,9 @@ public class MediaController {
 
     private final MediaService mediaService;
 
-    @PostMapping
-    public ResponseEntity<Media> uploadMedia(@RequestParam("file") MultipartFile file,
-                                             Authentication authentication) {
-        String username = authentication.getName();
-        Media media = mediaService.uploadMedia(file, username);
+    @PostMapping(consumes = "multipart/form-data")
+    public ResponseEntity<Media> uploadMedia(@RequestParam("file") MultipartFile file) {
+        Media media = mediaService.uploadMedia(file);
         return ResponseEntity.ok(media);
     }
 

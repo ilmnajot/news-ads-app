@@ -16,5 +16,7 @@ public class Role extends BaseEntity{
     @Column(nullable = false, unique = true)
     private String name;
 
+    private Boolean deleted=false;
+
 }
 

@@ -7,7 +7,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import uz.ilmnajot.newsadsapp.dto.request.NewsCreateRequest;
+import uz.ilmnajot.newsadsapp.dto.NewsCreateRequest;
 import uz.ilmnajot.newsadsapp.dto.response.NewsResponse;
 import uz.ilmnajot.newsadsapp.entity.*;
 import uz.ilmnajot.newsadsapp.enums.NewsStatus;
@@ -15,6 +15,7 @@ import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
 import uz.ilmnajot.newsadsapp.repository.*;
 import uz.ilmnajot.newsadsapp.util.HtmlSanitizer;
 import uz.ilmnajot.newsadsapp.util.SlugGenerator;
+import uz.ilmnajot.newsadsapp.util.UserUtil;
 
 import java.time.LocalDateTime;
 import java.util.*;
@@ -32,11 +33,13 @@ public class NewsService {
     private final MediaRepository mediaRepository;
     private final UserRepository userRepository;
     private final SlugGenerator slugGenerator;
+    private final UserUtil userUtil;
 
     @Transactional
     public NewsResponse createNews(NewsCreateRequest request) {
 
-        User currentUser = getCurrentUser();
+
+        User currentUser = this.userUtil.getCurrentUser();
         News news = News.builder()
                 .author(currentUser)
                 .status(NewsStatus.valueOf(request.getStatus().toUpperCase()))
@@ -70,11 +73,6 @@ public class NewsService {
             if (slug == null || slug.isEmpty()) {
                 slug = slugGenerator.generateSlug(tr.getTitle());
             }
-
-            // Check uniqueness and generate unique slug
-//            slug = SlugGenerator.generateUnique(slug, s ->
-//                newsTranslationRepository.existsBySlugAndLang(s, lang));
-
             NewsTranslation translation = NewsTranslation.builder()
                     .news(news)
                     .lang(lang)

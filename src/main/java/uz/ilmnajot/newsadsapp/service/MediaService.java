@@ -3,6 +3,9 @@ package uz.ilmnajot.newsadsapp.service;
 import io.minio.MinioClient;
 import io.minio.PutObjectArgs;
 import io.minio.RemoveObjectArgs;
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,7 +16,11 @@ import uz.ilmnajot.newsadsapp.entity.User;
 import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
 import uz.ilmnajot.newsadsapp.repository.MediaRepository;
 import uz.ilmnajot.newsadsapp.repository.UserRepository;
+import uz.ilmnajot.newsadsapp.util.UserUtil;
 
+import java.io.IOException;
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
 import java.util.UUID;
 
 @Service
@@ -24,6 +31,7 @@ public class MediaService {
     private final MediaRepository mediaRepository;
     private final MinioClient minioClient;
     private final UserRepository userRepository;
+    private final UserUtil userUtil;
 
     @Value("${app.s3.bucket:media}")
     private String bucketName;
@@ -31,15 +39,29 @@ public class MediaService {
     @Value("${app.s3.endpoint:http://localhost:9000}")
     private String endpoint;
 
-    public Media uploadMedia(MultipartFile file, String username) {
+    public Media uploadMedia(MultipartFile file) {
+        log.info("Uploading media...");
+        User currentUser = this.userUtil.getCurrentUser();
+        log.info("username: {}", currentUser.getUsername());
         try {
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
+            // Check if bucket exists, create if not
+            boolean found = minioClient.bucketExists(BucketExistsArgs
+                    .builder()
+                    .bucket(bucketName)
+                    .build());
+            if (!found) {
+                log.info("Bucket '{}' does not exist. Creating it...", bucketName);
+                minioClient.makeBucket(MakeBucketArgs.builder().bucket(bucketName).build());
+            }
 
+            User user = userRepository.findByUsername(currentUser.getUsername())
+                    .orElseThrow(() -> new ResourceNotFoundException("User not found"));
             String originalFilename = file.getOriginalFilename();
+            //doc-uments.pdf
             String extension = originalFilename != null && originalFilename.contains(".") ?
                     originalFilename.substring(originalFilename.lastIndexOf(".")) : "";
-            String storageKey = UUID.randomUUID().toString() + extension;
+            //extension=>.pdf
+            String storageKey = UUID.randomUUID() + extension;
 
             minioClient.putObject(
                     PutObjectArgs.builder()
@@ -61,8 +83,8 @@ public class MediaService {
                     .isPublic(true)
                     .build();
 
-            return mediaRepository.save(media);
-        } catch (Exception e) {
+            return this.mediaRepository.save(media);
+        } catch (MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             log.error("Error uploading media", e);
             throw new RuntimeException("Failed to upload media: " + e.getMessage());
         }
