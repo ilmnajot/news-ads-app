@@ -10,9 +10,9 @@ import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.entity.AdsPlacement;
 import uz.ilmnajot.newsadsapp.exception.BadRequestException;
 import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
+import uz.ilmnajot.newsadsapp.mapper.AdsPlacementMapper;
 import uz.ilmnajot.newsadsapp.repository.AdsPlacementRepository;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -22,33 +22,27 @@ import java.util.stream.Collectors;
 public class AdsPlacementService {
 
     private final AdsPlacementRepository placementRepository;
+    private final AdsPlacementMapper adsPlacementMapper;
 
     /**
      * CREATE Placement
      */
     @Transactional
     public ApiResponse createPlacement(AdsPlacementDto.CreatePlacement request) {
-        
+
         // Check if code already exists
-        if (placementRepository.existsByCode(request.getCode())) {
+        if (placementRepository.existsByCodeAndIsActiveTrue(request.getCode())) {
             throw new BadRequestException("Placement with code '" + request.getCode() + "' already exists");
         }
-        
-        AdsPlacement placement = AdsPlacement.builder()
-                .code(request.getCode())
-                .title(request.getTitle())
-                .description(request.getDescription())
-                .isActive(true)
-                .build();
-        
-        AdsPlacement saved = placementRepository.save(placement);
-        
-        log.info("Placement created: code={}", saved.getCode());
-        
+
+        AdsPlacement entity = this.adsPlacementMapper.toEntity(request);
+        entity.setIsActive(true);
+        entity = placementRepository.save(entity);
+        log.info("Placement created: code={}", entity.getCode());
         return ApiResponse.builder()
                 .status(HttpStatus.CREATED)
                 .message("Placement created successfully")
-                .data(mapToDto(saved))
+                .data(this.adsPlacementMapper.toDto(entity))
                 .build();
     }
 
@@ -57,16 +51,16 @@ public class AdsPlacementService {
      */
     @Transactional(readOnly = true)
     public ApiResponse getAllPlacements() {
-        
+
         List<AdsPlacement> placements = placementRepository.findAll();
-        
-        List<AdsPlacementDto> dtos = placements.stream()
-                .map(this::mapToDto)
+
+        List<AdsPlacementDto> dtos = placements
+                .stream()
+                .map(this.adsPlacementMapper::toDto)
                 .collect(Collectors.toList());
-        
+
         return ApiResponse.builder()
-                .status(HttpStatus.OK
-                )
+                .status(HttpStatus.OK)
                 .message("Success")
                 .data(dtos)
                 .build();
@@ -77,14 +71,12 @@ public class AdsPlacementService {
      */
     @Transactional(readOnly = true)
     public ApiResponse getPlacementById(Long id) {
-        
         AdsPlacement placement = placementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Placement not found"));
-        
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
                 .message("Success")
-                .data(mapToDto(placement))
+                .data(this.adsPlacementMapper.toDto(placement))
                 .build();
     }
 
@@ -93,32 +85,27 @@ public class AdsPlacementService {
      */
     @Transactional
     public ApiResponse updatePlacement(Long id, AdsPlacementDto.UpdatePlacement request) {
-        
+
         AdsPlacement placement = placementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Placement not found"));
-        
-        if (request.getTitle() != null) {
-            placement.setTitle(request.getTitle());
+        if (request.getCode() != null) {
+            String code = request.getCode();
+            if (this.placementRepository.existsByCodeAndIsActiveTrue(code)) {
+                return ApiResponse.builder()
+                        .status(HttpStatus.BAD_REQUEST)
+                        .message("This is already exists")
+                        .build();
+            }
+            placement.setCode(request.getCode());
         }
-        
-        if (request.getDescription() != null) {
-            placement.setDescription(request.getDescription());
-        }
-        
-        if (request.getIsActive() != null) {
-            placement.setIsActive(request.getIsActive());
-        }
-        
-        placement.setUpdatedAt(LocalDateTime.now());
-        
-        AdsPlacement updated = placementRepository.save(placement);
-        
-        log.info("Placement updated: id={}, code={}", id, updated.getCode());
-        
+        this.adsPlacementMapper.toUpdate(placement, request);
+        placement = this.placementRepository.save(placement);
+
+        log.info("Placement updated: id={}, code={}", id, placement.getCode());
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
-                .message("Placement updated successfully")
-                .data(mapToDto(updated))
+                .message("Success")
+                .data(this.adsPlacementMapper.toDto(placement))
                 .build();
     }
 
@@ -127,33 +114,19 @@ public class AdsPlacementService {
      */
     @Transactional
     public ApiResponse deletePlacement(Long id) {
-        
+
         if (!placementRepository.existsById(id)) {
             throw new ResourceNotFoundException("Placement not found");
         }
-        
+
         placementRepository.deleteById(id);
-        
+
         log.info("Placement deleted: id={}", id);
-        
+
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
                 .message("Placement deleted successfully")
                 .build();
     }
 
-    /**
-     * Entity → DTO mapping
-     */
-    private AdsPlacementDto mapToDto(AdsPlacement placement) {
-        return AdsPlacementDto.builder()
-                .id(placement.getId())
-                .code(placement.getCode())
-                .title(placement.getTitle())
-                .description(placement.getDescription())
-                .isActive(placement.getIsActive())
-                .createdAt(placement.getCreatedAt())
-                .updatedAt(placement.getUpdatedAt())
-                .build();
-    }
 }

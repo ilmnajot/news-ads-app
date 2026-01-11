@@ -2,7 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import uz.ilmnajot.newsadsapp.enums.Status;
+import uz.ilmnajot.newsadsapp.enums.AdsComStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ public class AdsCampaign extends BaseEntity {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     @Builder.Default
-    private Status status = Status.DRAFT;
+    private AdsComStatus status = AdsComStatus.DRAFT;
 
     @Column(name = "start_at")
     private LocalDateTime startAt;

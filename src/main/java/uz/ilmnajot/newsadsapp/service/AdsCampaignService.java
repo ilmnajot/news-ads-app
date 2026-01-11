@@ -6,9 +6,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.dto.AdsCampaignDto;
-import uz.ilmnajot.newsadsapp.dto.ApiResponse;
+import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.entity.AdsCampaign;
-import uz.ilmnajot.newsadsapp.enums.CampaignStatus;
+import uz.ilmnajot.newsadsapp.enums.AdsComStatus;
 import uz.ilmnajot.newsadsapp.exception.BadRequestException;
 import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
 import uz.ilmnajot.newsadsapp.repository.AdsCampaignRepository;
@@ -38,7 +38,7 @@ public class AdsCampaignService {
         AdsCampaign campaign = AdsCampaign.builder()
                 .name(request.getName())
                 .advertiser(request.getAdvertiser())
-                .status(CampaignStatus.DRAFT)
+                .status(AdsComStatus.DRAFT)
                 .startAt(request.getStartAt())
                 .endAt(request.getEndAt())
                 .dailyCapImpressions(request.getDailyCapImpressions())
@@ -50,7 +50,7 @@ public class AdsCampaignService {
         log.info("Campaign created: id={}, name={}", saved.getId(), saved.getName());
         
         return ApiResponse.builder()
-                .status(HttpStatus.CREATED.value())
+                .status(HttpStatus.CREATED)
                 .message("Campaign created successfully")
                 .data(mapToDto(saved))
                 .build();
@@ -69,7 +69,7 @@ public class AdsCampaignService {
                 .collect(Collectors.toList());
         
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Success")
                 .data(dtos)
                 .build();
@@ -85,7 +85,7 @@ public class AdsCampaignService {
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
         
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Success")
                 .data(mapToDto(campaign))
                 .build();
@@ -140,7 +140,7 @@ public class AdsCampaignService {
         log.info("Campaign updated: id={}, name={}", id, updated.getName());
         
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Campaign updated successfully")
                 .data(mapToDto(updated))
                 .build();
@@ -155,8 +155,8 @@ public class AdsCampaignService {
         AdsCampaign campaign = campaignRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
         
-        CampaignStatus oldStatus = campaign.getStatus();
-        CampaignStatus newStatus = request.getStatus();
+        AdsComStatus oldStatus = campaign.getStatus();
+        AdsComStatus newStatus = request.getStatus();
         
         if (oldStatus.equals(newStatus)) {
             throw new BadRequestException("Campaign is already in " + newStatus + " status");
@@ -173,7 +173,7 @@ public class AdsCampaignService {
         log.info("Campaign status changed: id={}, from={}, to={}", id, oldStatus, newStatus);
         
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Campaign status updated successfully")
                 .data(mapToDto(updated))
                 .build();
@@ -193,7 +193,7 @@ public class AdsCampaignService {
         log.info("Campaign deleted: id={}, name={}", id, campaign.getName());
         
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Campaign deleted successfully")
                 .build();
     }
@@ -201,9 +201,9 @@ public class AdsCampaignService {
     /**
      * Validate status transitions
      */
-    private void validateStatusTransition(CampaignStatus from, CampaignStatus to) {
+    private void validateStatusTransition(AdsComStatus from, AdsComStatus to) {
         // Business rules for status transitions
-        if (from == CampaignStatus.ENDED) {
+        if (from == AdsComStatus.ENDED) {
             throw new BadRequestException("Cannot change status of ended campaign");
         }
     }

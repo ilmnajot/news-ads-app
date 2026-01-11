@@ -24,7 +24,6 @@ public class AdsPlacementController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse> createPlacement(
             @Valid @RequestBody AdsPlacementDto.CreatePlacement request) {
-
         ApiResponse response = placementService.createPlacement(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }
@@ -62,7 +61,6 @@ public class AdsPlacementController {
     public ResponseEntity<ApiResponse> updatePlacement(
             @PathVariable Long id,
             @Valid @RequestBody AdsPlacementDto.UpdatePlacement request) {
-
         ApiResponse response = placementService.updatePlacement(id, request);
         return ResponseEntity.ok(response);
     }
@@ -74,7 +72,6 @@ public class AdsPlacementController {
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ApiResponse> deletePlacement(@PathVariable Long id) {
-
         ApiResponse response = placementService.deletePlacement(id);
         return ResponseEntity.ok(response);
     }

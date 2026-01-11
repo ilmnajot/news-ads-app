@@ -1,5 +1,5 @@
 package uz.ilmnajot.newsadsapp.enums;
 
-public enum Type {
+public enum CreativeType {
         IMAGE, HTML
     }

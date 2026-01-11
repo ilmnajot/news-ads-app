@@ -24,7 +24,6 @@ public class AdsCreativeController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse> createCreative(
             @Valid @RequestBody AdsCreativeDto.CreateCreative request) {
-        
         ApiResponse response = creativeService.createCreative(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

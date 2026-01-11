@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import uz.ilmnajot.newsadsapp.enums.CampaignStatus;
+import uz.ilmnajot.newsadsapp.enums.AdsComStatus;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ public class AdsCampaignDto {
     private Long id;
     private String name;
     private String advertiser;
-    private CampaignStatus status;
+    private AdsComStatus status;
     private LocalDateTime startAt;
     private LocalDateTime endAt;
     private Integer dailyCapImpressions;
@@ -76,6 +76,6 @@ public class AdsCampaignDto {
     public static class UpdateCampaignStatus {
         
         @NotNull(message = "Status is required")
-        private CampaignStatus status;
+        private AdsComStatus status;
     }
 }

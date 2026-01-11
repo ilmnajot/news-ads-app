@@ -24,7 +24,6 @@ public class AdsAssignmentController {
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse> createAssignment(
             @Valid @RequestBody AdsAssignmentDto.CreateAssignment request) {
-        
         ApiResponse response = assignmentService.createAssignment(request);
         return ResponseEntity.status(response.getStatus()).body(response);
     }

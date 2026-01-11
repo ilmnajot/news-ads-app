@@ -1,6 +1,6 @@
 package uz.ilmnajot.newsadsapp.enums;
 
-public enum Status {
+public enum AdsComStatus {
         DRAFT,
     ACTIVE,
     PAUSED,

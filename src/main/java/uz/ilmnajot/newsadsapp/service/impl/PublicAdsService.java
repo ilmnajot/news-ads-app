@@ -42,7 +42,7 @@ public class PublicAdsService {
 
         // Get all active assignments for placement
         List<AdsAssignment> assignments = assignmentRepository
-                .findActiveAssignmentsForPlacement(placementCode, now);
+                .findActiveAssignmentsForPlacement(placementCode);
 
         if (assignments.isEmpty()) {
             log.warn("No active ads found for placement: {}", placementCode);

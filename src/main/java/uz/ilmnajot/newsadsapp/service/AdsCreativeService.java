@@ -6,7 +6,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.dto.AdsCreativeDto;
-import uz.ilmnajot.newsadsapp.dto.ApiResponse;
+import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.entity.AdsCampaign;
 import uz.ilmnajot.newsadsapp.entity.AdsCreative;
 import uz.ilmnajot.newsadsapp.entity.AdsCreativeTranslation;
@@ -19,9 +19,7 @@ import uz.ilmnajot.newsadsapp.repository.AdsCreativeRepository;
 import uz.ilmnajot.newsadsapp.repository.MediaRepository;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,21 +36,24 @@ public class AdsCreativeService {
      */
     @Transactional
     public ApiResponse createCreative(AdsCreativeDto.CreateCreative request) {
-        
+
         // Validate campaign
         AdsCampaign campaign = campaignRepository.findById(request.getCampaignId())
                 .orElseThrow(() -> new ResourceNotFoundException("Campaign not found"));
-        
+
         // Validate type-specific fields
-        validateCreativeData(request.getType(), request.getImageMediaId(), request.getHtmlSnippet());
-        
+        validateCreativeData(
+                request.getType(),
+                request.getImageMediaId(),
+                request.getHtmlSnippet());
+
         AdsCreative creative = AdsCreative.builder()
                 .campaign(campaign)
                 .type(request.getType())
                 .landingUrl(request.getLandingUrl())
                 .isActive(true)
                 .build();
-        
+
         // Set type-specific fields
         if (request.getType() == CreativeType.IMAGE) {
             Media media = mediaRepository.findById(request.getImageMediaId())
@@ -61,32 +62,37 @@ public class AdsCreativeService {
         } else {
             creative.setHtmlSnippet(request.getHtmlSnippet());
         }
-        
+
         // Save creative first
         creative = creativeRepository.save(creative);
-        
+
         // Create translations
         for (Map.Entry<String, AdsCreativeDto.CreateTranslation> entry : request.getTranslations().entrySet()) {
             String lang = entry.getKey();
             AdsCreativeDto.CreateTranslation tr = entry.getValue();
-            
+
             AdsCreativeTranslation translation = AdsCreativeTranslation.builder()
                     .creative(creative)
                     .lang(lang)
                     .title(tr.getTitle())
                     .altText(tr.getAltText())
                     .build();
-            
+
+            log.info("ino: {}", creative.getTranslations());
+            if (creative.getTranslations() == null) {
+                creative.setTranslations(new ArrayList<>());
+            }
             creative.getTranslations().add(translation);
+
         }
-        
+
         AdsCreative saved = creativeRepository.save(creative);
-        
-        log.info("Creative created: id={}, type={}, campaignId={}", 
-            saved.getId(), saved.getType(), campaign.getId());
-        
+
+        log.info("Creative created: id={}, type={}, campaignId={}",
+                saved.getId(), saved.getType(), campaign.getId());
+
         return ApiResponse.builder()
-                .status(HttpStatus.CREATED.value())
+                .status(HttpStatus.CREATED)
                 .message("Creative created successfully")
                 .data(mapToDto(saved))
                 .build();
@@ -97,15 +103,15 @@ public class AdsCreativeService {
      */
     @Transactional(readOnly = true)
     public ApiResponse getAllCreatives() {
-        
+
         List<AdsCreative> creatives = creativeRepository.findAll();
-        
+
         List<AdsCreativeDto> dtos = creatives.stream()
                 .map(this::mapToDto)
                 .collect(Collectors.toList());
-        
+
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Success")
                 .data(dtos)
                 .build();
@@ -116,12 +122,12 @@ public class AdsCreativeService {
      */
     @Transactional(readOnly = true)
     public ApiResponse getCreativeById(Long id) {
-        
+
         AdsCreative creative = creativeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Creative not found"));
-        
+
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Success")
                 .data(mapToDto(creative))
                 .build();
@@ -132,58 +138,58 @@ public class AdsCreativeService {
      */
     @Transactional
     public ApiResponse updateCreative(Long id, AdsCreativeDto.UpdateCreative request) {
-        
+
         AdsCreative creative = creativeRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Creative not found"));
-        
+
         // Update fields
         if (request.getLandingUrl() != null) {
             creative.setLandingUrl(request.getLandingUrl());
         }
-        
+
         if (request.getImageMediaId() != null && creative.getType() == CreativeType.IMAGE) {
             Media media = mediaRepository.findById(request.getImageMediaId())
                     .orElseThrow(() -> new ResourceNotFoundException("Media not found"));
             creative.setImageMedia(media);
         }
-        
+
         if (request.getHtmlSnippet() != null && creative.getType() == CreativeType.HTML) {
             creative.setHtmlSnippet(request.getHtmlSnippet());
         }
-        
+
         if (request.getIsActive() != null) {
             creative.setIsActive(request.getIsActive());
         }
-        
+
         // Update translations
         if (request.getTranslations() != null && !request.getTranslations().isEmpty()) {
             // Clear existing
             creative.getTranslations().clear();
-            
+
             // Add new
             for (Map.Entry<String, AdsCreativeDto.CreateTranslation> entry : request.getTranslations().entrySet()) {
                 String lang = entry.getKey();
                 AdsCreativeDto.CreateTranslation tr = entry.getValue();
-                
+
                 AdsCreativeTranslation translation = AdsCreativeTranslation.builder()
                         .creative(creative)
                         .lang(lang)
                         .title(tr.getTitle())
                         .altText(tr.getAltText())
                         .build();
-                
+
                 creative.getTranslations().add(translation);
             }
         }
-        
+
         creative.setUpdatedAt(LocalDateTime.now());
-        
+
         AdsCreative updated = creativeRepository.save(creative);
-        
+
         log.info("Creative updated: id={}", id);
-        
+
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Creative updated successfully")
                 .data(mapToDto(updated))
                 .build();
@@ -194,17 +200,17 @@ public class AdsCreativeService {
      */
     @Transactional
     public ApiResponse deleteCreative(Long id) {
-        
+
         if (!creativeRepository.existsById(id)) {
             throw new ResourceNotFoundException("Creative not found");
         }
-        
+
         creativeRepository.deleteById(id);
-        
+
         log.info("Creative deleted: id={}", id);
-        
+
         return ApiResponse.builder()
-                .status(HttpStatus.OK.value())
+                .status(HttpStatus.OK)
                 .message("Creative deleted successfully")
                 .build();
     }
@@ -225,17 +231,17 @@ public class AdsCreativeService {
      * Entity → DTO mapping
      */
     private AdsCreativeDto mapToDto(AdsCreative creative) {
-        
+
         // Map translations
         Map<String, AdsCreativeDto.TranslationDto> translationMap = new HashMap<>();
         for (AdsCreativeTranslation tr : creative.getTranslations()) {
             translationMap.put(tr.getLang(), new AdsCreativeDto.TranslationDto(
-                tr.getLang(),
-                tr.getTitle(),
-                tr.getAltText()
+                    tr.getLang(),
+                    tr.getTitle(),
+                    tr.getAltText()
             ));
         }
-        
+
         return AdsCreativeDto.builder()
                 .id(creative.getId())
                 .campaignId(creative.getCampaign().getId())

@@ -9,6 +9,6 @@ import java.util.Optional;
 @Repository
 public interface AdsPlacementRepository extends JpaRepository<AdsPlacement, Long> {
     Optional<AdsPlacement> findByCode(String code);
-    boolean existsByCode(String code);
+    boolean existsByCodeAndIsActiveTrue(String code);
 }
 

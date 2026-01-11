@@ -8,6 +8,6 @@ import java.util.List;
 
 @Repository
 public interface AdsCampaignRepository extends JpaRepository<AdsCampaign, Long> {
-    List<AdsCampaign> findByStatus(AdsCampaign.Status status);
+    List<AdsCampaign> findByStatus(AdsCampaign status);
 }
 

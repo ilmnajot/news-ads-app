@@ -21,6 +21,8 @@ public class AdsPlacementDto {
     private Boolean isActive;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
+    private Long createdBy;
+    private Long updatedBy;
     
     @Data
     @NoArgsConstructor
@@ -43,7 +45,9 @@ public class AdsPlacementDto {
     @NoArgsConstructor
     @AllArgsConstructor
     public static class UpdatePlacement {
-        
+        @Pattern(regexp = "^[a-z0-9-]+$", message = "Code must contain only lowercase letters, numbers and hyphens")
+        @Size(min = 3, max = 100)
+        private String code;
         @Size(min = 3, max = 200)
         private String title;
         

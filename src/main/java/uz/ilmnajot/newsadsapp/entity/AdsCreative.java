@@ -2,7 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
-import uz.ilmnajot.newsadsapp.enums.Type;
+import uz.ilmnajot.newsadsapp.enums.CreativeType;
 
 import java.util.List;
 
@@ -20,8 +20,7 @@ public class AdsCreative extends BaseEntity {
     private AdsCampaign campaign;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private Type type;
+    private CreativeType type;
 
     @Column(name = "landing_url", length = 1000)
     private String landingUrl;
