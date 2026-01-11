@@ -29,4 +29,15 @@ public class CategoryDto {
         private List<CategoryTranslationDto.AddCategoryTranslation> translationsDtoList;
     }
 
+    @Data
+    @Builder
+    public static class CategoryPublicDto {
+        private Long id;
+        private Long parentId;
+        private String lang;
+        private String title;
+        private String slug;
+        private String description;
+    }
+
 }

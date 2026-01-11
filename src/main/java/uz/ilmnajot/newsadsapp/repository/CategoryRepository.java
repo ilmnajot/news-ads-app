@@ -47,5 +47,14 @@ public interface CategoryRepository extends JpaRepository<Category, Long> {
             "ORDER BY c.id")
     List<Category> findRootCategoriesWithTranslations();
 
+    @Query("""
+    select distinct c
+    from Category c
+    join c.translations ct
+    where c.isActive = true
+      and ct.lang = :lang
+""")
+    List<Category> findPublicCategories(@Param("lang") String lang);
+
 }
 

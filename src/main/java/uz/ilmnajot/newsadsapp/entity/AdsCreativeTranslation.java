@@ -20,7 +20,6 @@ public class AdsCreativeTranslation extends BaseEntity {
     @Column(nullable = false, length = 5)
     private String lang;
 
-    @Column(length = 255)
     private String title;
 
     @Column(name = "alt_text", length = 255)

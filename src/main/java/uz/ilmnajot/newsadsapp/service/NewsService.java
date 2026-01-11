@@ -3,22 +3,32 @@ package uz.ilmnajot.newsadsapp.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.dto.NewsCreateRequest;
-import uz.ilmnajot.newsadsapp.dto.response.NewsResponse;
+import uz.ilmnajot.newsadsapp.dto.NewsHistoryDto;
+import uz.ilmnajot.newsadsapp.dto.NewsResponse;
+import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.entity.*;
 import uz.ilmnajot.newsadsapp.enums.NewsStatus;
+import uz.ilmnajot.newsadsapp.exception.BadRequestException;
 import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
+import uz.ilmnajot.newsadsapp.filter.NewsFilter;
+import uz.ilmnajot.newsadsapp.mapper.NewsHistoryMapper;
+import uz.ilmnajot.newsadsapp.mapper.NewsMapper;
 import uz.ilmnajot.newsadsapp.repository.*;
 import uz.ilmnajot.newsadsapp.util.HtmlSanitizer;
 import uz.ilmnajot.newsadsapp.util.SlugGenerator;
 import uz.ilmnajot.newsadsapp.util.UserUtil;
 
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,11 +44,12 @@ public class NewsService {
     private final UserRepository userRepository;
     private final SlugGenerator slugGenerator;
     private final UserUtil userUtil;
+    private final NewsMapper newsMapper;
+    private final NewsHistoryMapper newsHistoryMapper;
 
+    //done
     @Transactional
     public NewsResponse createNews(NewsCreateRequest request) {
-
-
         User currentUser = this.userUtil.getCurrentUser();
         News news = News.builder()
                 .author(currentUser)
@@ -98,59 +109,89 @@ public class NewsService {
         }
 
         // Record history
-        recordStatusChange(news, null, news.getStatus().name(), currentUser);
+        recordStatusChange(news, news.getStatus().name(), currentUser);
 
-        return mapToResponse(newsRepository.save(news));
+        return this.newsMapper.toDto(newsRepository.save(news));
     }
 
-    public Page<NewsResponse> getNews(Pageable pageable, String status, Long authorId, 
-                                     Long categoryId, String tagCode, String lang) {
-        Page<News> newsPage;
-        
-        if (status != null) {
-            newsPage = newsRepository.findByStatus(NewsStatus.valueOf(status.toUpperCase()), pageable);
-        } else if (authorId != null) {
-            newsPage = newsRepository.findByAuthorId(authorId, pageable);
-        } else if (categoryId != null) {
-            newsPage = newsRepository.findByCategoryId(categoryId, pageable);
-        } else if (tagCode != null) {
-            newsPage = newsRepository.findByTagCode(tagCode, pageable);
-        } else {
-            newsPage = newsRepository.findAllNonDeleted(pageable);
-        }
-
-        return newsPage.map(this::mapToResponse);
+    public ApiResponse getNews(Pageable pageable, NewsFilter filter) {
+        Page<News> page = this.newsRepository.findAll(filter, pageable);
+        List<NewsResponse> list = this.newsMapper.toDto(page.getContent());
+        return ApiResponse.builder()
+                .status(HttpStatus.OK)
+                .message("Success")
+                .data(list)
+                .pages(page.getTotalPages())
+                .elements(page.getTotalElements())
+                .build();
     }
 
     public NewsResponse getNewsById(Long id) {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
-        return mapToResponse(news);
+        return this.newsMapper.toDto(news);
     }
 
     @Transactional
-    public NewsResponse updateNewsStatus(Long id, String toStatus) {
+    public NewsResponse updateNewsStatus(Long id, NewsStatus newStatus) {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
-        
-        NewsStatus fromStatus = news.getStatus();
-        news.setStatus(NewsStatus.valueOf(toStatus.toUpperCase()));
-        
+        //old one!
+        NewsStatus oldStatus = news.getStatus();
+        if (newStatus.equals(oldStatus)) {
+            throw new BadRequestException("The status has not been changed yet!");
+        }
+        Map<String, Object> diff = Map.of(
+                "field", "status",
+                "from", oldStatus,
+                "to", newStatus
+        );
         User currentUser = getCurrentUser();
-        recordStatusChange(news, fromStatus.name(), toStatus, currentUser);
-        
-        return mapToResponse(newsRepository.save(news));
+        recordStatusChange(news, oldStatus, newStatus, currentUser, diff);
+        news.setStatus(newStatus);
+        news = newsRepository.save(news);
+        return this.newsMapper.toDto(news);
+    }
+
+    private void recordStatusChange(
+            News news,
+            NewsStatus fromStatus,
+            NewsStatus toStatus,
+            User user,
+            Map<String, Object> diff) {
+        NewsHistory history = NewsHistory.builder()
+                .news(news)
+                .changedBy(user)
+                .fromStatus(fromStatus.name())
+                .toStatus(toStatus.name())
+                .diffJson(diff)
+                .build();
+        newsHistoryRepository.save(history);
     }
 
     @Transactional
     public void softDeleteNews(Long id) {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
+
+        User currentUser = getCurrentUser();
+
+        // History yozish
+        Map<String, Object> diff = Map.of(
+                "action", "soft_delete",
+                "oldDeletedStatus", false,
+                "newDeletedStatus", true,
+                "timestamp", LocalDateTime.now().toString(),
+                "user", currentUser.getUsername()
+        );
+
+        recordNewsHistory(news, currentUser, "ACTIVE", "DELETED", diff);
+
+        // Delete
         news.setIsDeleted(true);
         news.setDeletedAt(LocalDateTime.now());
         newsRepository.save(news);
     }
-
     @Transactional
     public void restoreNews(Long id) {
         News news = newsRepository.findById(id)
@@ -158,9 +199,31 @@ public class NewsService {
         if (!news.getIsDeleted()) {
             throw new IllegalArgumentException("News is not deleted");
         }
+        User user = this.getCurrentUser();
+
+        Boolean oldDeletedStatus = news.getIsDeleted();
         news.setIsDeleted(false);
         news.setDeletedAt(null);
-        newsRepository.save(news);
+        News news2 = newsRepository.save(news);
+        Map<String, Object> diff = Map.of(
+                "action", "restore",
+                "oldDeletedStatus", oldDeletedStatus,     // true
+                "newDeletedStatus", false,                 // false
+                "user", user.getUsername(),
+                "timestamp", LocalDateTime.now().toString()
+        );
+        this.recordNewsHistory(news, user, news.getIsDeleted().toString(), news2.getIsDeleted().toString(), diff);
+    }
+
+    private void recordNewsHistory(News news, User user, String from, String to, Map<String, Object> diff) {
+        NewsHistory history = NewsHistory.builder()
+                .news(news)           // ← qo'shildi!
+                .changedBy(user)
+                .fromStatus(from)
+                .toStatus(to)
+                .diffJson(diff)
+                .build();
+        newsHistoryRepository.save(history);
     }
 
     @Transactional
@@ -171,15 +234,22 @@ public class NewsService {
         newsRepository.deleteById(id);
     }
 
-    public List<NewsHistory> getNewsHistory(Long newsId) {
-        return newsHistoryRepository.findByNewsIdOrderByChangedByDesc(newsId);
+    public ApiResponse getNewsHistory(Long newsId) {
+        List<NewsHistory> historyList = newsHistoryRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
+        List<NewsHistoryDto> dtoList = this.newsHistoryMapper.toDto(historyList);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK)
+                .message("Success")
+                .data(dtoList)
+                .build();
+
     }
 
-    private void recordStatusChange(News news, String fromStatus, String toStatus, User user) {
+    private void recordStatusChange(News news, String toStatus, User user) {
         NewsHistory history = NewsHistory.builder()
                 .news(news)
                 .changedBy(user)
-                .fromStatus(fromStatus)
+                .fromStatus(null)
                 .toStatus(toStatus)
                 .build();
         newsHistoryRepository.save(history);
@@ -192,44 +262,5 @@ public class NewsService {
                 .orElseThrow(() -> new RuntimeException("User not found"));
     }
 
-    public NewsResponse mapToResponse(News news) {
-        Map<String, NewsResponse.NewsTranslationResponse> translations = news.getTranslations().stream()
-                .collect(Collectors.toMap(
-                    NewsTranslation::getLang,
-                    t -> NewsResponse.NewsTranslationResponse.builder()
-                            .id(t.getId())
-                            .lang(t.getLang())
-                            .title(t.getTitle())
-                            .slug(t.getSlug())
-                            .summary(t.getSummary())
-                            .content(t.getContent())
-                            .metaTitle(t.getMetaTitle())
-                            .metaDescription(t.getMetaDescription())
-                            .build()
-                ));
-
-        List<String> tags = news.getTags() != null ? 
-                news.getTags().stream().map(Tag::getCode).collect(Collectors.toList()) : 
-                Collections.emptyList();
-
-        return NewsResponse.builder()
-                .id(news.getId())
-                .authorId(news.getAuthor().getId())
-                .authorName(news.getAuthor().getFullName())
-                .categoryId(news.getCategory() != null ? news.getCategory().getId() : null)
-                .categoryTitle(null) // Can be populated if needed
-                .coverMediaId(news.getCoverMedia() != null ? news.getCoverMedia().getId() : null)
-                .coverMediaUrl(news.getCoverMedia() != null ? news.getCoverMedia().getUrl() : null)
-                .status(news.getStatus())
-                .isFeatured(news.getIsFeatured())
-                .isDeleted(news.getIsDeleted())
-                .publishAt(news.getPublishAt())
-                .unpublishAt(news.getUnpublishAt())
-                .createdAt(news.getCreatedAt())
-                .updatedAt(news.getUpdatedAt())
-                .translations(translations)
-                .tags(tags)
-                .build();
-    }
 }
 

@@ -1,4 +1,4 @@
-package uz.ilmnajot.newsadsapp.dto.response;
+package uz.ilmnajot.newsadsapp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

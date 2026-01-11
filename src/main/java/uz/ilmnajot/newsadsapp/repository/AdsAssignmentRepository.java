@@ -24,5 +24,7 @@ public interface AdsAssignmentRepository extends JpaRepository<AdsAssignment, Lo
     
     List<AdsAssignment> findByPlacementId(Long placementId);
     List<AdsAssignment> findByCampaignId(Long campaignId);
+
+    List<AdsAssignment> findActiveAssignmentsForPlacement(String placementCode, LocalDateTime now);
 }
 

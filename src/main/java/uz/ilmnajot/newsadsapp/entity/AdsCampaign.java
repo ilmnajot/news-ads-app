@@ -2,6 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.ilmnajot.newsadsapp.enums.Status;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,14 +16,10 @@ import java.util.List;
 @Builder
 public class AdsCampaign extends BaseEntity {
 
-    public enum Status {
-        DRAFT, ACTIVE, PAUSED, ENDED
-    }
-
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String name;
 
-    @Column(nullable = false, length = 255)
+    @Column(nullable = false)
     private String advertiser;
 
     @Enumerated(EnumType.STRING)

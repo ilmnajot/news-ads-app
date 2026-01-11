@@ -2,6 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.ilmnajot.newsadsapp.enums.Type;
 
 import java.util.List;
 
@@ -13,10 +14,6 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class AdsCreative extends BaseEntity {
-
-    public enum Type {
-        IMAGE, HTML
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "campaign_id", nullable = false)

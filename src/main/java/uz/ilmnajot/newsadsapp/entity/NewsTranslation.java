@@ -35,10 +35,12 @@ public class NewsTranslation extends BaseEntity {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    @Column(name = "meta_title", length = 255)
+    @Column(name = "meta_title")
     private String metaTitle;
 
     @Column(name = "meta_description", columnDefinition = "TEXT")
     private String metaDescription;
+
+
 }
 

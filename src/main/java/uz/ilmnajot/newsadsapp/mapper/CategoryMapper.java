@@ -33,4 +33,28 @@ public class CategoryMapper {
                 .updatedAt(category.getUpdatedAt())
                 .build();
     }
+    // 🌍 PUBLIC (faqat 1 ta til)
+    public CategoryDto.CategoryPublicDto toPublicDto(Category category, String lang) {
+
+        var translation = category.getTranslations().stream()
+                .filter(t -> t.getLang().equals(lang))
+                .findFirst()
+                .orElse(null);
+
+        if (translation == null) {
+            return null; // yoki exception — pastda aytaman
+        }
+
+        return CategoryDto.CategoryPublicDto.builder()
+                .id(category.getId())
+                .parentId(category.getParent() != null ? category.getParent().getId() : null)
+                .lang(translation.getLang())
+                .title(translation.getTitle())
+                .slug(translation.getSlug())
+                .description(translation.getDescription())
+                .build();
+    }
+
+
+
 }
