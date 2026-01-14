@@ -2,7 +2,6 @@ package uz.ilmnajot.newsadsapp.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.dto.AdsAssignmentDto;
@@ -22,10 +21,8 @@ public class AdsAssignmentController {
      */
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> createAssignment(
-            @Valid @RequestBody AdsAssignmentDto.CreateAssignment request) {
-        ApiResponse response = assignmentService.createAssignment(request);
-        return ResponseEntity.status(response.getStatus()).body(response);
+    public ApiResponse createAssignment(@Valid @RequestBody AdsAssignmentDto.CreateAssignment request) {
+        return assignmentService.createAssignment(request);
     }
 
     /**
@@ -34,10 +31,8 @@ public class AdsAssignmentController {
      */
     @GetMapping("/get-all")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAllAssignments() {
-        
-        ApiResponse response = assignmentService.getAllAssignments();
-        return ResponseEntity.ok(response);
+    public ApiResponse getAllAssignments() {
+        return assignmentService.getAllAssignments();
     }
 
     /**
@@ -46,10 +41,8 @@ public class AdsAssignmentController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAssignmentById(@PathVariable Long id) {
-        
-        ApiResponse response = assignmentService.getAssignmentById(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse getAssignmentById(@PathVariable Long id) {
+        return assignmentService.getAssignmentById(id);
     }
 
     /**
@@ -58,12 +51,10 @@ public class AdsAssignmentController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updateAssignment(
+    public ApiResponse updateAssignment(
             @PathVariable Long id,
             @Valid @RequestBody AdsAssignmentDto.UpdateAssignment request) {
-        
-        ApiResponse response = assignmentService.updateAssignment(id, request);
-        return ResponseEntity.ok(response);
+        return assignmentService.updateAssignment(id, request);
     }
 
     /**
@@ -72,9 +63,7 @@ public class AdsAssignmentController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteAssignment(@PathVariable Long id) {
-        
-        ApiResponse response = assignmentService.deleteAssignment(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse deleteAssignment(@PathVariable Long id) {
+        return assignmentService.deleteAssignment(id);
     }
 }

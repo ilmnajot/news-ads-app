@@ -2,7 +2,6 @@ package uz.ilmnajot.newsadsapp.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.dto.AdsCampaignDto;
