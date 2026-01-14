@@ -1,9 +1,10 @@
-package uz.ilmnajot.newsadsapp.dto.response;
+package uz.ilmnajot.newsadsapp.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import uz.ilmnajot.newsadsapp.security.SecurityConstants;
 
 import java.util.Date;
 
@@ -14,7 +15,7 @@ import java.util.Date;
 public class JwtResponse {
     private String accessToken;
     private String refreshToken;
-    private String tokenType = "Bearer";
+    private String tokenType = SecurityConstants.BEARER_PREFIX;
     private Date accessTokenExpireDate;
     private Date refreshTokenExpireDate;
 }

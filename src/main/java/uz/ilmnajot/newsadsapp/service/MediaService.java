@@ -1,16 +1,14 @@
 package uz.ilmnajot.newsadsapp.service;
 
-import io.minio.MinioClient;
-import io.minio.PutObjectArgs;
-import io.minio.RemoveObjectArgs;
-import io.minio.BucketExistsArgs;
-import io.minio.MakeBucketArgs;
+import io.minio.*;
 import io.minio.errors.MinioException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
+import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.entity.Media;
 import uz.ilmnajot.newsadsapp.entity.User;
 import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
@@ -39,7 +37,7 @@ public class MediaService {
     @Value("${app.s3.endpoint:http://localhost:9000}")
     private String endpoint;
 
-    public Media uploadMedia(MultipartFile file) {
+    public ApiResponse uploadMedia(MultipartFile file) {
         log.info("Uploading media...");
         User currentUser = this.userUtil.getCurrentUser();
         log.info("username: {}", currentUser.getUsername());
@@ -83,14 +81,23 @@ public class MediaService {
                     .isPublic(true)
                     .build();
 
-            return this.mediaRepository.save(media);
+            media = this.mediaRepository.save(media);
+            return ApiResponse.builder()
+                    .status(HttpStatus.CREATED)
+                    .message("Media uploaded successfully")
+                    .data(media)
+                    .build();
         } catch (MinioException | IOException | NoSuchAlgorithmException | InvalidKeyException e) {
             log.error("Error uploading media", e);
-            throw new RuntimeException("Failed to upload media: " + e.getMessage());
+            return ApiResponse.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message("Failed to upload media")
+                    .data(e.getMessage())
+                    .build();
         }
     }
 
-    public void deleteMedia(Long id) {
+    public ApiResponse deleteMedia(Long id) {
         Media media = mediaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Media not found"));
 
@@ -102,9 +109,17 @@ public class MediaService {
                             .build()
             );
             mediaRepository.delete(media);
+            return ApiResponse.builder()
+                    .status(HttpStatus.NO_CONTENT)
+                    .message("Media deleted successfully")
+                    .build();
         } catch (Exception e) {
             log.error("Error deleting media", e);
-            throw new RuntimeException("Failed to delete media: " + e.getMessage());
+            return ApiResponse.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message("Failed to delete media")
+                    .data(e.getMessage())
+                    .build();
         }
     }
 }

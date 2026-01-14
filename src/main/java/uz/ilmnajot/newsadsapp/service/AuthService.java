@@ -12,7 +12,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import uz.ilmnajot.newsadsapp.dto.UserDto;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
-import uz.ilmnajot.newsadsapp.dto.response.JwtResponse;
+import uz.ilmnajot.newsadsapp.dto.JwtResponse;
 import uz.ilmnajot.newsadsapp.entity.Role;
 import uz.ilmnajot.newsadsapp.entity.User;
 import uz.ilmnajot.newsadsapp.repository.RoleRepository;

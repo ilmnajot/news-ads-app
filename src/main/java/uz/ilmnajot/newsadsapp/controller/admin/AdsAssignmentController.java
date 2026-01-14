@@ -20,7 +20,7 @@ public class AdsAssignmentController {
      * CREATE Assignment
      * POST /admin/ads/assignments
      */
-    @PostMapping
+    @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<ApiResponse> createAssignment(
             @Valid @RequestBody AdsAssignmentDto.CreateAssignment request) {
@@ -32,7 +32,7 @@ public class AdsAssignmentController {
      * GET All Assignments
      * GET /admin/ads/assignments
      */
-    @GetMapping
+    @GetMapping("/get-all")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     public ResponseEntity<ApiResponse> getAllAssignments() {
         

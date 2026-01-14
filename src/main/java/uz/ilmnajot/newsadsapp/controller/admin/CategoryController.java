@@ -2,24 +2,11 @@ package uz.ilmnajot.newsadsapp.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-//import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.dto.CategoryDto;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
-import uz.ilmnajot.newsadsapp.entity.Category;
-import uz.ilmnajot.newsadsapp.entity.CategoryTranslation;
-import uz.ilmnajot.newsadsapp.repository.CategoryRepository;
-import uz.ilmnajot.newsadsapp.repository.CategoryTranslationRepository;
-import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
 import uz.ilmnajot.newsadsapp.service.CategoryService;
-
-import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/v1/admin/categories")
@@ -27,57 +14,53 @@ import java.util.Map;
 public class CategoryController {
 
     private final CategoryService categoryService;
+
     /**
      * CREATE - Yangi kategoriya yaratish
      */
-    @PostMapping("add")
-////    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> addCategory(@Valid @RequestBody CategoryDto.AddCategory dto) {
-        ApiResponse response = categoryService.addCategory(dto);
-        return ResponseEntity.status(response.getStatus()).body(response);
+    @PostMapping("/add")
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ApiResponse addCategory(@Valid @RequestBody CategoryDto.AddCategory dto) {
+        return categoryService.addCategory(dto);
     }
 
     /**
-     * READ - Barcha kategoriyalar (tree structure)
+     * READ - Barcha kategoriyalar
      */
     @GetMapping("/get-all")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAllCategories() {
-        ApiResponse response = categoryService.getAllCategories();
-        return ResponseEntity.status(response.getStatus()).body(response);
-
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
+    public ApiResponse getAllCategories() {
+        return categoryService.getAllCategories();
     }
+
     /**
-     * READ - Barcha kategoriyalar til bo'yicha (tree structure)
+     * READ - Barcha kategoriyalar til bo'yicha
      */
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     @GetMapping("/get-all-by-lang")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAllCategoriesByLang(
+    public ApiResponse getAllCategoriesByLang(
             @RequestParam(required = false, defaultValue = "uz") String lang) {
-        ApiResponse response = categoryService.getAllCategoriesByLang(lang);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return categoryService.getAllCategoriesByLang(lang);
     }
 
     /**
      * Bitta kategoriya (lang bilan)
      */
     @GetMapping("/{id}/lang/{lang}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getCategoryByIdAndLang(
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
+    public ApiResponse getCategoryByIdAndLang(
             @PathVariable Long id,
             @PathVariable String lang) {
-        ApiResponse response = categoryService.getCategoryByIdAndLang(id, lang);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return categoryService.getCategoryByIdAndLang(id, lang);
     }
 
     /**
      * READ - Bitta kategoriya (ID bo'yicha)
      */
     @GetMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getCategoryById(@PathVariable Long id) {
-        ApiResponse response = categoryService.getCategoryById(id);
-        return ResponseEntity.status(response.getStatus()).body(response);
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
+    public ApiResponse getCategoryById(@PathVariable Long id) {
+        return categoryService.getCategoryById(id);
 
     }
 
@@ -85,12 +68,11 @@ public class CategoryController {
      * READ - Slug va lang bo'yicha kategoriya
      */
     @GetMapping("/slug/{slug}")
-////    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getCategoryBySlug(
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
+    public ApiResponse getCategoryBySlug(
             @PathVariable String slug,
             @RequestParam(defaultValue = "uz") String lang) {
-        ApiResponse response = categoryService.getCategoryBySlug(slug, lang);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return categoryService.getCategoryBySlug(slug, lang);
 
     }
 
@@ -98,12 +80,11 @@ public class CategoryController {
      * UPDATE - Kategoriyani yangilash
      */
     @PutMapping("/{id}")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updateCategory(
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ApiResponse updateCategory(
             @PathVariable Long id,
-            @Valid @RequestBody CategoryDto.AddCategory dto) {
-        ApiResponse response = categoryService.updateCategory(id, dto);
-        return ResponseEntity.status(response.getStatus()).body(response);
+            @RequestBody CategoryDto.AddCategory dto) {
+        return categoryService.updateCategory(id, dto);
 
     }
 
@@ -111,10 +92,9 @@ public class CategoryController {
      * PATCH - Kategoriya statusini o'zgartirish
      */
     @PatchMapping("/{id}/toggle-status")
-//    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> toggleStatus(@PathVariable Long id) {
-        ApiResponse response = categoryService.toggleCategoryStatus(id);
-        return ResponseEntity.status(response.getStatus()).body(response);
+    @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
+    public ApiResponse toggleStatus(@PathVariable Long id) {
+        return categoryService.toggleCategoryStatus(id);
 
     }
 
@@ -122,11 +102,9 @@ public class CategoryController {
      * DELETE - Kategoriyani o'chirish
      */
     @DeleteMapping("/{id}")
-//    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteCategory(@PathVariable Long id) {
-        ApiResponse response = categoryService.deleteCategory(id);
-        return ResponseEntity.status(response.getStatus()).body(response);
-
+    @PreAuthorize("hasRole('ADMIN')")
+    public ApiResponse deleteCategory(@PathVariable Long id) {
+        return categoryService.deleteCategory(id);
     }
 }
 

@@ -1,6 +1,7 @@
 package uz.ilmnajot.newsadsapp.dto;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Data;
 import uz.ilmnajot.newsadsapp.entity.Category;
@@ -25,7 +26,9 @@ public class CategoryDto {
 
     @Data
     public static class AddCategory{
+        @NotNull
         private Long parentId;
+        @NotNull
         private List<CategoryTranslationDto.AddCategoryTranslation> translationsDtoList;
     }
 
