@@ -2,6 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 
 @Entity
 @Table(name = "ads_creative_translation",

@@ -6,12 +6,6 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 import java.util.concurrent.TimeUnit;
 
-/**
- * Rate Limit annotation for request throttling
- *
- * Usage:
- * @RateLimit(limit = 5, duration = 1, timeUnit = TimeUnit.MINUTES)
- */
 @Target(ElementType.METHOD)  // Faqat method'larda ishlatiladi
 @Retention(RetentionPolicy.RUNTIME)  // Runtime'da o'qiladi
 public @interface RateLimit {

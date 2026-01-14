@@ -18,39 +18,6 @@ public class RateLimitService {
     private final RedisTemplate<String, Object> redisTemplate;
 
     /**
-     * Check if request is allowed (Simple counter method)
-     * 
-     * @param key Unique key (IP:endpoint)
-     * @param limit Max requests
-     * @param duration Duration in seconds
-     * @return true if allowed, false if rate limited
-     */
-    public boolean isAllowedSimple(String key, int limit, long duration) {
-        
-        String redisKey = "rate_limit:" + key;
-        
-        // Get current count
-        Long count = redisTemplate.opsForValue().increment(redisKey);
-        
-        if (count == null) {
-            count = 0L;
-        }
-        
-        // Set expiry on first request
-        if (count == 1) {
-            redisTemplate.expire(redisKey, duration, TimeUnit.SECONDS);
-        }
-        
-        boolean allowed = count <= limit;
-        
-        if (!allowed) {
-            log.warn("Rate limit exceeded: key={}, count={}/{}", key, count, limit);
-        }
-        
-        return allowed;
-    }
-
-    /**
      * Check if request is allowed (Sliding Window method - BETTER!)
      * 
      * Uses Redis sorted set with timestamps
@@ -87,42 +54,6 @@ public class RateLimitService {
     }
 
     /**
-     * Check with Lua script (Atomic operation - BEST!)
-     */
-    public boolean isAllowedAtomic(String key, int limit, long durationSeconds) {
-        
-        String redisKey = "rate_limit:" + key;
-        
-        // Lua script for atomic increment + expiry
-        String luaScript = 
-            "local current = redis.call('incr', KEYS[1]) " +
-            "if current == 1 then " +
-            "    redis.call('expire', KEYS[1], ARGV[1]) " +
-            "end " +
-            "return current";
-        
-        RedisScript<Long> script = RedisScript.of(luaScript, Long.class);
-        
-        Long count = redisTemplate.execute(
-            script,
-            Collections.singletonList(redisKey),
-            String.valueOf(durationSeconds)
-        );
-        
-        if (count == null) {
-            count = 0L;
-        }
-        
-        boolean allowed = count <= limit;
-        
-        if (!allowed) {
-            log.warn("Rate limit exceeded (atomic): key={}, count={}/{}", key, count, limit);
-        }
-        
-        return allowed;
-    }
-
-    /**
      * Get remaining requests
      */
     public long getRemainingRequests(String key, int limit, long durationSeconds) {
@@ -130,7 +61,6 @@ public class RateLimitService {
         String redisKey = "rate_limit:" + key;
         long now = System.currentTimeMillis();
         long windowStart = now - (durationSeconds * 1000);
-        
         // Remove old entries
         redisTemplate.opsForZSet().removeRangeByScore(redisKey, 0, windowStart);
         
@@ -150,20 +80,7 @@ public class RateLimitService {
     public long getTimeUntilReset(String key) {
         
         String redisKey = "rate_limit:" + key;
-        
-        Long ttl = redisTemplate.getExpire(redisKey, TimeUnit.SECONDS);
-        
-        return ttl != null ? ttl : 0;
-    }
 
-    /**
-     * Reset rate limit for a key (for testing or admin actions)
-     */
-    public void reset(String key) {
-        
-        String redisKey = "rate_limit:" + key;
-        redisTemplate.delete(redisKey);
-        
-        log.info("Rate limit reset: key={}", key);
+        return redisTemplate.getExpire(redisKey, TimeUnit.SECONDS);
     }
 }

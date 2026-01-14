@@ -5,6 +5,7 @@ import lombok.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;

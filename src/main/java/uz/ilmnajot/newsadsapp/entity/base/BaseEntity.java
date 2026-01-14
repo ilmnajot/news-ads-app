@@ -1,4 +1,4 @@
-package uz.ilmnajot.newsadsapp.entity;
+package uz.ilmnajot.newsadsapp.entity.base;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;

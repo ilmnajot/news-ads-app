@@ -4,10 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.annotation.RateLimit;
-import uz.ilmnajot.newsadsapp.dto.NewsPublicResponse;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.filter.NewsFilter;
 import uz.ilmnajot.newsadsapp.service.PublicNewsService;
@@ -28,7 +26,12 @@ public class PublicNewsController {
      * Allows more requests for public
      */
 
-    @RateLimit(limit = 60, duration = 1, timeUnit = TimeUnit.MINUTES, message = "Too many search requests")
+    @RateLimit(
+            limit = 60,
+            duration = 1,
+            timeUnit = TimeUnit.MINUTES,
+            message = "Too many requests"
+    )
     @GetMapping
     public ApiResponse getPublicNews(
             @RequestParam(value = "keyword", required = false) String keyword,
@@ -56,11 +59,10 @@ public class PublicNewsController {
      * GET /api/v1/public/news/ozbekiston-qatarni-yengdi?lang=uz
      */
     @GetMapping("/{slug}")
-    public ResponseEntity<NewsPublicResponse> getNewsBySlug(
+    public ApiResponse getNewsBySlug(
             @PathVariable String slug,
             @RequestParam(defaultValue = "uz") String lang) {
-        NewsPublicResponse news = publicNewsService.getNewsBySlug(slug, lang);
-        return ResponseEntity.ok(news);
+        return publicNewsService.getNewsBySlug(slug, lang);
     }
 
     @GetMapping("/categories")

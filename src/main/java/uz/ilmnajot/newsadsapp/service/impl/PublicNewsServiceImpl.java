@@ -99,17 +99,17 @@ public class PublicNewsServiceImpl implements PublicNewsService {
             key = "'slug:' + #slug + ':lang:' + #lang",
             unless = "#result == null"
     )
-    @Transactional(readOnly = true)
-    public NewsPublicResponse getNewsBySlug(String slug, String lang) {
+    public ApiResponse getNewsBySlug(String slug, String lang) {
 
         log.info("Cache MISS - Fetching from DB: slug={}, lang={}", slug, lang);
-
         LocalDateTime now = LocalDateTime.now();
-
         News news = newsRepository.findPublicNewsBySlug(slug, lang, now)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
 
-        return newsMapper.toPublicDto(news, lang);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK)
+                .data(newsMapper.toPublicDto(news, lang))
+                .build();
     }
 
     @Cacheable(
@@ -138,6 +138,7 @@ public class PublicNewsServiceImpl implements PublicNewsService {
                 )
                 .build();
     }
+
     @Cacheable(
             value = "tags",
             unless = "#result == null || #result.data.isEmpty()"

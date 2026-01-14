@@ -2,6 +2,7 @@ package uz.ilmnajot.newsadsapp.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 
 import java.time.LocalDateTime;

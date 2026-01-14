@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.service.impl;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.dto.AdsAssignmentDto;
@@ -22,6 +23,7 @@ import uz.ilmnajot.newsadsapp.service.AdsAssignmentService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -34,6 +36,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
     private final AdsCampaignRepository campaignRepository;
     private final AdsCreativeRepository creativeRepository;
     private final AdsAssignmentMapper assignmentMapper;
+    private final AdsAssignmentRepository adsAssignmentRepository;
 
     /**
      * CREATE Assignment
@@ -189,5 +192,66 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
                 .status(HttpStatus.OK)
                 .message("Assignment deleted successfully")
                 .build();
+    }
+
+    @Override
+    public ApiResponse findActiveAssignmentsByPlacement(String placementCode, String lang, Long categoryId) {
+
+        LocalDateTime now = LocalDateTime.now();
+        List<AdsAssignment> assignments = adsAssignmentRepository.findActiveAssignmentsByPlacement(placementCode, now);
+
+        // Filter by language and category
+        List<AdsAssignment> filtered = assignments.stream()
+                .filter(a -> matchesLangFilter(a, lang))
+                .filter(a -> matchesCategoryFilter(a, categoryId))
+                .collect(Collectors.toList());
+
+        if (filtered.isEmpty()) {
+            throw new ResourceNotFoundException("No active ad found for placement: " + placementCode);
+        }
+
+        // Weight-based selection
+        AdsAssignment selected = selectByWeight(filtered);
+
+        return ApiResponse.builder()
+                .status(HttpStatus.OK)
+                .data(this.assignmentMapper.toDto(selected))
+                .build();
+    }
+
+    private boolean matchesLangFilter(AdsAssignment assignment, String lang) {
+        if (assignment.getLangFilter() == null || assignment.getLangFilter().isEmpty()) {
+            return true; // No filter means all languages
+        }
+        return assignment.getLangFilter().contains(lang);
+    }
+
+    private boolean matchesCategoryFilter(AdsAssignment assignment, Long categoryId) {
+        if (assignment.getCategoryFilter() == null || assignment.getCategoryFilter().isEmpty()) {
+            return true; // No filter means all categories
+        }
+        if (categoryId == null) {
+            return true;
+        }
+        return assignment.getCategoryFilter().contains(categoryId);
+    }
+
+    private AdsAssignment selectByWeight(List<AdsAssignment> assignments) {
+        Random random = new Random();
+        int totalWeight = assignments.stream()
+                .mapToInt(a -> a.getWeight() != null ? a.getWeight() : 100)
+                .sum();
+
+        int randomValue = random.nextInt(totalWeight);
+        int currentWeight = 0;
+
+        for (AdsAssignment assignment : assignments) {
+            currentWeight += assignment.getWeight() != null ? assignment.getWeight() : 100;
+            if (randomValue < currentWeight) {
+                return assignment;
+            }
+        }
+
+        return assignments.get(0); // Fallback
     }
 }

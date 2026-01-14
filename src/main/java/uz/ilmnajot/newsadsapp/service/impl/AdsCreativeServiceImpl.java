@@ -1,4 +1,4 @@
-package uz.ilmnajot.newsadsapp.service;
+package uz.ilmnajot.newsadsapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,6 +17,7 @@ import uz.ilmnajot.newsadsapp.exception.ResourceNotFoundException;
 import uz.ilmnajot.newsadsapp.repository.AdsCampaignRepository;
 import uz.ilmnajot.newsadsapp.repository.AdsCreativeRepository;
 import uz.ilmnajot.newsadsapp.repository.MediaRepository;
+import uz.ilmnajot.newsadsapp.service.AdsCreativeService;
 
 import java.time.LocalDateTime;
 import java.util.*;

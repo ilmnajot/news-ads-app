@@ -8,7 +8,7 @@ import uz.ilmnajot.newsadsapp.filter.NewsFilter;
 public interface PublicNewsService {
     ApiResponse getPublicNews(NewsFilter filter, Pageable pageable);
 
-    NewsPublicResponse getNewsBySlug(String slug, String lang);
+    ApiResponse getNewsBySlug(String slug, String lang);
 
     ApiResponse getPublicCategories(String lang);
     ApiResponse getPublicTags();

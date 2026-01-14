@@ -9,4 +9,5 @@ public interface AdsAssignmentService {
     ApiResponse getAssignmentById(Long id);
     ApiResponse updateAssignment(Long id, AdsAssignmentDto.UpdateAssignment request);
     ApiResponse deleteAssignment(Long id);
+    ApiResponse findActiveAssignmentsByPlacement(String code, String lang, Long categoryId);
 }
