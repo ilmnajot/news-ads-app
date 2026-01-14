@@ -2,7 +2,6 @@ package uz.ilmnajot.newsadsapp.controller.admin;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.dto.AdsPlacementDto;
@@ -22,10 +21,9 @@ public class AdsPlacementController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> createPlacement(
+    public ApiResponse createPlacement(
             @Valid @RequestBody AdsPlacementDto.CreatePlacement request) {
-        ApiResponse response = placementService.createPlacement(request);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return placementService.createPlacement(request);
     }
 
     /**
@@ -34,10 +32,8 @@ public class AdsPlacementController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAllPlacements() {
-
-        ApiResponse response = placementService.getAllPlacements();
-        return ResponseEntity.ok(response);
+    public ApiResponse getAllPlacements() {
+        return placementService.getAllPlacements();
     }
 
     /**
@@ -46,10 +42,8 @@ public class AdsPlacementController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getPlacementById(@PathVariable Long id) {
-
-        ApiResponse response = placementService.getPlacementById(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse getPlacementById(@PathVariable Long id) {
+        return placementService.getPlacementById(id);
     }
 
     /**
@@ -58,11 +52,10 @@ public class AdsPlacementController {
      */
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updatePlacement(
+    public ApiResponse updatePlacement(
             @PathVariable Long id,
             @Valid @RequestBody AdsPlacementDto.UpdatePlacement request) {
-        ApiResponse response = placementService.updatePlacement(id, request);
-        return ResponseEntity.ok(response);
+        return placementService.updatePlacement(id, request);
     }
 
     /**
@@ -71,8 +64,7 @@ public class AdsPlacementController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deletePlacement(@PathVariable Long id) {
-        ApiResponse response = placementService.deletePlacement(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse deletePlacement(@PathVariable Long id) {
+        return placementService.deletePlacement(id);
     }
 }

@@ -75,6 +75,7 @@ public class TagServiceImpl implements TagService {
         Tag tag = this.tagRepository.findById(tagId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
         this.tagMapper.toUpdate(tag, dto);
+        this.tagRepository.save(tag);
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
                 .message("Tag has been updated")

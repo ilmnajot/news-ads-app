@@ -24,10 +24,6 @@ public class AdsPlacementService {
     private final AdsPlacementRepository placementRepository;
     private final AdsPlacementMapper adsPlacementMapper;
 
-    /**
-     * CREATE Placement
-     */
-    @Transactional
     public ApiResponse createPlacement(AdsPlacementDto.CreatePlacement request) {
 
         // Check if code already exists
@@ -45,20 +41,13 @@ public class AdsPlacementService {
                 .data(this.adsPlacementMapper.toDto(entity))
                 .build();
     }
-
-    /**
-     * GET All Placements
-     */
-    @Transactional(readOnly = true)
     public ApiResponse getAllPlacements() {
 
         List<AdsPlacement> placements = placementRepository.findAll();
-
         List<AdsPlacementDto> dtos = placements
                 .stream()
                 .map(this.adsPlacementMapper::toDto)
                 .collect(Collectors.toList());
-
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
                 .message("Success")
@@ -66,10 +55,6 @@ public class AdsPlacementService {
                 .build();
     }
 
-    /**
-     * GET Placement by ID
-     */
-    @Transactional(readOnly = true)
     public ApiResponse getPlacementById(Long id) {
         AdsPlacement placement = placementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Placement not found"));
@@ -80,9 +65,6 @@ public class AdsPlacementService {
                 .build();
     }
 
-    /**
-     * UPDATE Placement
-     */
     @Transactional
     public ApiResponse updatePlacement(Long id, AdsPlacementDto.UpdatePlacement request) {
 
@@ -109,10 +91,6 @@ public class AdsPlacementService {
                 .build();
     }
 
-    /**
-     * DELETE Placement
-     */
-    @Transactional
     public ApiResponse deletePlacement(Long id) {
 
         if (!placementRepository.existsById(id)) {

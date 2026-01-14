@@ -107,10 +107,8 @@ public class NewsService {
                     .collect(Collectors.toSet());
             news.setTags(tags);
         }
-
         // Record history
         recordStatusChange(news, news.getStatus().name(), currentUser);
-
         return this.newsMapper.toDto(newsRepository.save(news));
     }
 
@@ -192,6 +190,7 @@ public class NewsService {
         news.setDeletedAt(LocalDateTime.now());
         newsRepository.save(news);
     }
+
     @Transactional
     public void restoreNews(Long id) {
         News news = newsRepository.findById(id)
@@ -227,11 +226,21 @@ public class NewsService {
     }
 
     @Transactional
-    public void hardDeleteNews(Long id) {
+    public ApiResponse hardDeleteNews(Long id) {
         if (!newsRepository.existsById(id)) {
             throw new ResourceNotFoundException("News not found");
         }
-        newsRepository.deleteById(id);
+        try {
+            newsRepository.deleteById(id);
+            return ApiResponse.builder()
+                    .status(HttpStatus.NO_CONTENT)
+                    .build();
+        } catch (Exception e) {
+            return ApiResponse.builder()
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .message("Failed to delete news")
+                    .build();
+        }
     }
 
     public ApiResponse getNewsHistory(Long newsId) {

@@ -4,7 +4,6 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -26,11 +25,11 @@ public class NewsController {
     private final NewsService newsService;
 
     //done
-    @GetMapping
-    public HttpEntity<ApiResponse> getAllNews(
+    @GetMapping("/get-all")
+    public ApiResponse getAllNews(
             @RequestParam(value = "keyword", required = false) String keyword,
             @RequestParam(value = "lang", defaultValue = "uz", required = false) String lang,
-            @RequestParam(value = "tag", required = false)String tag,
+            @RequestParam(value = "tag", required = false) String tag,
             @RequestParam(value = "authorId", required = false) Long authorId,
             @RequestParam(value = "categoryId", required = false) Long categoryId,
             @RequestParam(value = "status", required = false) NewsStatus status,
@@ -38,8 +37,8 @@ public class NewsController {
             @RequestParam(value = "isDeleted", required = false) Boolean isDeleted,
             @RequestParam(value = "from", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate from,
             @RequestParam(value = "to", required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate to,
-            @RequestParam(value = "page",defaultValue = "0")  Integer page,
-            @RequestParam(value = "size",defaultValue = "20") Integer size) {
+            @RequestParam(value = "page", defaultValue = "0") Integer page,
+            @RequestParam(value = "size", defaultValue = "20") Integer size) {
         NewsFilter filter = new NewsFilter();
         filter.setKeyword(keyword);
         filter.setLang(lang);
@@ -51,8 +50,7 @@ public class NewsController {
         filter.setDeleted(isDeleted);
         filter.setFrom(from);
         filter.setTo(to);
-        ApiResponse ap = this.newsService.getNews(PageRequest.of(page, size), filter);
-        return ResponseEntity.status(ap.getStatus()).body(ap);
+        return this.newsService.getNews(PageRequest.of(page, size), filter);
     }
 
     //done
@@ -63,7 +61,7 @@ public class NewsController {
     }
 
     //done
-    @PostMapping
+    @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     public ResponseEntity<NewsResponse> addNews(@Valid @RequestBody NewsCreateRequest request) {
         NewsResponse news = this.newsService.createNews(request);
@@ -73,15 +71,14 @@ public class NewsController {
     //done
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<NewsResponse> updateStatus(@PathVariable Long id, 
-                                                      @RequestParam NewsStatus status) {
-//        String toStatus = request.get("to_status");
+    public ResponseEntity<NewsResponse> updateStatus(@PathVariable Long id,
+                                                     @RequestParam NewsStatus status) {
         NewsResponse news = newsService.updateNewsStatus(id, status);
         return ResponseEntity.ok(news);
     }
 
     //done
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ResponseEntity<Void> deleteNews(@PathVariable Long id) {
         newsService.softDeleteNews(id);
@@ -99,16 +96,14 @@ public class NewsController {
     //done
     @DeleteMapping("/{id}/hard")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Void> hardDeleteNews(@PathVariable Long id) {
-        newsService.hardDeleteNews(id);
-        return ResponseEntity.noContent().build();
+    public ApiResponse hardDeleteNews(@PathVariable Long id) {
+        return newsService.hardDeleteNews(id);
     }
 
     //done
     @GetMapping("/{id}/history")
-    public HttpEntity<ApiResponse> getNewsHistory(@PathVariable Long id) {
-        ApiResponse apiResponse = newsService.getNewsHistory(id);
-        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    public ApiResponse getNewsHistory(@PathVariable Long id) {
+        return newsService.getNewsHistory(id);
     }
 }
 

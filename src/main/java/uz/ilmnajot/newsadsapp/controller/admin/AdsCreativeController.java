@@ -22,10 +22,9 @@ public class AdsCreativeController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> createCreative(
+    public ApiResponse createCreative(
             @Valid @RequestBody AdsCreativeDto.CreateCreative request) {
-        ApiResponse response = creativeService.createCreative(request);
-        return ResponseEntity.status(response.getStatus()).body(response);
+        return creativeService.createCreative(request);
     }
 
     /**
@@ -34,10 +33,8 @@ public class AdsCreativeController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAllCreatives() {
-        
-        ApiResponse response = creativeService.getAllCreatives();
-        return ResponseEntity.ok(response);
+    public ApiResponse getAllCreatives() {
+        return creativeService.getAllCreatives();
     }
 
     /**
@@ -46,10 +43,8 @@ public class AdsCreativeController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getCreativeById(@PathVariable Long id) {
-        
-        ApiResponse response = creativeService.getCreativeById(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse getCreativeById(@PathVariable Long id) {
+        return creativeService.getCreativeById(id);
     }
 
     /**
@@ -58,12 +53,10 @@ public class AdsCreativeController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updateCreative(
+    public ApiResponse updateCreative(
             @PathVariable Long id,
             @Valid @RequestBody AdsCreativeDto.UpdateCreative request) {
-        
-        ApiResponse response = creativeService.updateCreative(id, request);
-        return ResponseEntity.ok(response);
+        return creativeService.updateCreative(id, request);
     }
 
     /**
@@ -72,9 +65,7 @@ public class AdsCreativeController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteCreative(@PathVariable Long id) {
-        
-        ApiResponse response = creativeService.deleteCreative(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse deleteCreative(@PathVariable Long id) {
+        return creativeService.deleteCreative(id);
     }
 }

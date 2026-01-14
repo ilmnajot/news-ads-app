@@ -22,11 +22,8 @@ public class AdsCampaignController {
      */
     @PostMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> createCampaign(
-            @Valid @RequestBody AdsCampaignDto.CreateCampaign request) {
-        
-        ApiResponse response = campaignService.createCampaign(request);
-        return ResponseEntity.status(response.getStatus()).body(response);
+    public ApiResponse createCampaign(@RequestBody AdsCampaignDto.CreateCampaign request) {
+        return campaignService.createCampaign(request);
     }
 
     /**
@@ -35,10 +32,8 @@ public class AdsCampaignController {
      */
     @GetMapping
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getAllCampaigns() {
-        
-        ApiResponse response = campaignService.getAllCampaigns();
-        return ResponseEntity.ok(response);
+    public ApiResponse getAllCampaigns() {
+        return campaignService.getAllCampaigns();
     }
 
     /**
@@ -47,10 +42,8 @@ public class AdsCampaignController {
      */
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<ApiResponse> getCampaignById(@PathVariable Long id) {
-        
-        ApiResponse response = campaignService.getCampaignById(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse getCampaignById(@PathVariable Long id) {
+        return campaignService.getCampaignById(id);
     }
 
     /**
@@ -59,12 +52,11 @@ public class AdsCampaignController {
      */
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updateCampaign(
+    public ApiResponse updateCampaign(
             @PathVariable Long id,
             @Valid @RequestBody AdsCampaignDto.UpdateCampaign request) {
         
-        ApiResponse response = campaignService.updateCampaign(id, request);
-        return ResponseEntity.ok(response);
+        return campaignService.updateCampaign(id, request);
     }
 
     /**
@@ -73,12 +65,10 @@ public class AdsCampaignController {
      */
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updateCampaignStatus(
+    public ApiResponse updateCampaignStatus(
             @PathVariable Long id,
             @Valid @RequestBody AdsCampaignDto.UpdateCampaignStatus request) {
-        
-        ApiResponse response = campaignService.updateCampaignStatus(id, request);
-        return ResponseEntity.ok(response);
+        return campaignService.updateCampaignStatus(id, request);
     }
 
     /**
@@ -87,9 +77,7 @@ public class AdsCampaignController {
      */
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse> deleteCampaign(@PathVariable Long id) {
-        
-        ApiResponse response = campaignService.deleteCampaign(id);
-        return ResponseEntity.ok(response);
+    public ApiResponse deleteCampaign(@PathVariable Long id) {
+        return campaignService.deleteCampaign(id);
     }
 }

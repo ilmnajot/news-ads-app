@@ -3,8 +3,6 @@ package uz.ilmnajot.newsadsapp.controller.admin;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.dto.TagDto;
@@ -18,41 +16,40 @@ public class TagController {
 
     private final TagService tagService;
 
-
-    @GetMapping
-    public ResponseEntity<ApiResponse> getAllTags(
+    /**
+     * GET ALL TAGS WITH PAGINATION
+     *
+     */
+    @GetMapping("/get-all")
+    public ApiResponse getAllTags(
             @RequestParam(name = "page", defaultValue = "0") int page,
             @RequestParam(name = "size", defaultValue = "20") int size) {
-        ApiResponse apiResponse = this.tagService.getAllTags(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
-        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
-
+        return this.tagService.getAllTags(PageRequest.of(page, size, Sort.by(Sort.Direction.DESC, "createdAt")));
     }
 
-    @PostMapping
+    @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public HttpEntity<ApiResponse> addTag(@RequestBody TagDto.AddTag dto) {
-        ApiResponse apiResponse = this.tagService.addTag(dto);
-        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    public ApiResponse addTag(@RequestBody TagDto.AddTag dto) {
+        return this.tagService.addTag(dto);
     }
 
     @PatchMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<ApiResponse> updateTag(@PathVariable Long id,
-                                                 @RequestBody TagDto.UpdateTag dto) {
-        ApiResponse apiResponse = this.tagService.updateTag(id, dto);
-        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    public ApiResponse updateTag(
+            @PathVariable Long id,
+            @RequestBody TagDto.UpdateTag dto) {
+        return this.tagService.updateTag(id, dto);
     }
 
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public HttpEntity<?> inActivateTag(@PathVariable Long id) {
-        ApiResponse apiResponse = this.tagService.deleteTag(id);
-        return ResponseEntity.status(apiResponse.getStatus()).build();
+    public ApiResponse inActivateTag(@PathVariable Long id) {
+        return this.tagService.deleteTag(id);
     }
+
     @GetMapping("/{id}")
-    public HttpEntity<ApiResponse> getTagById(@PathVariable Long id) {
-        ApiResponse apiResponse = this.tagService.getTagById(id);
-        return ResponseEntity.status(apiResponse.getStatus()).body(apiResponse);
+    public ApiResponse getTagById(@PathVariable Long id) {
+        return this.tagService.getTagById(id);
     }
 
 }

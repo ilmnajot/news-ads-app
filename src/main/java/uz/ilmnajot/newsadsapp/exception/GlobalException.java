@@ -95,4 +95,16 @@ public class GlobalException {
                 .status(HttpStatus.METHOD_NOT_ALLOWED)
                 .build();
     }
+
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ResponseEntity<ApiResponse> handleRateLimitExceeded(RateLimitExceededException ex) {
+
+        ApiResponse response = ApiResponse.builder()
+                .status(HttpStatus.TOO_MANY_REQUESTS)  // 429
+                .message(ex.getMessage())
+                .data(null)
+                .build();
+
+        return ResponseEntity.status(HttpStatus.TOO_MANY_REQUESTS).body(response);
+    }
 }
