@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 @Retention(RetentionPolicy.RUNTIME)  // Runtime'da o'qiladi
 public @interface RateLimit {
 
-    /**
+    /*
      * Maksimal so'rovlar soni
      */
     int limit() default 10;
