@@ -9,11 +9,11 @@ export const mediaAPI = {
                 'Content-Type': 'multipart/form-data',
             },
         });
-        return response.data;
+        return response.data.data;
     },
 
     delete: async (id) => {
         const response = await axiosInstance.delete(`/admin/media/${id}`);
-        return response.data;
+        return response.data.data;
     },
 };

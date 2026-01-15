@@ -44,7 +44,7 @@ export const NewsListPage = () => {
         try {
             setLoading(true);
             const response = await newsAPI.getAll(filters);
-            setNews(response.data || []);
+            setNews(response || []);
         } catch (error) {
             console.error('Error fetching news:', error);
             toast.error('Failed to load articles');

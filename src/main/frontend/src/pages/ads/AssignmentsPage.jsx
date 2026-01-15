@@ -58,11 +58,11 @@ export const AssignmentsPage = () => {
                 categoriesAPI.getAll()
             ]);
 
-            setAssignments(assRes.data || []);
-            setCampaigns(camRes.data || []);
-            setPlacements(plaRes.data || []);
-            setCreatives(creRes.data || []);
-            setCategories(catRes.data || []);
+            setAssignments(assRes || []);
+            setCampaigns(camRes || []);
+            setPlacements(plaRes || []);
+            setCreatives(creRes || []);
+            setCategories(catRes || []);
         } catch (error) {
             console.error('Data initialization error:', error);
             toast.error('Failed to load ad data');

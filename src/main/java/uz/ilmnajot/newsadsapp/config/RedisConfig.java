@@ -74,7 +74,7 @@ public class RedisConfig {
 
         // Tags: 10 minutes
         cacheConfigurations.put("tags", defaultConfig.entryTtl(Duration.ofMinutes(10)));
-        // Ads cache - ✅ YANGI
+        // Ads cache -
         cacheConfigurations.put("publicAds", defaultConfig.entryTtl(Duration.ofSeconds(30)));
 
         return RedisCacheManager.builder(connectionFactory)
@@ -86,7 +86,6 @@ public class RedisConfig {
     private GenericJackson2JsonRedisSerializer jsonRedisSerializer() {
         ObjectMapper objectMapper = new ObjectMapper();
 
-        // Java 8 date/time support
         objectMapper.registerModule(new JavaTimeModule());
 
         // Enable type info for polymorphic deserialization

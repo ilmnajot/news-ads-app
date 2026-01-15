@@ -22,7 +22,7 @@ export const PublicNewsPage = () => {
         try {
             setLoading(true);
             const response = await publicNewsAPI.getAll(filters);
-            setNews(response.data || []);
+            setNews(response || []);
         } catch (error) {
             console.error('Error fetching news:', error);
         } finally {

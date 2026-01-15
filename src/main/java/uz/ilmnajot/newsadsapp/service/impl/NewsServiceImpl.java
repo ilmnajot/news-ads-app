@@ -199,7 +199,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public void restoreNews(Long id) {
+    public ApiResponse restoreNews(Long id) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
         if (!news.getIsDeleted()) {
@@ -219,6 +219,10 @@ public class NewsServiceImpl implements NewsService {
                 "timestamp", LocalDateTime.now().toString()
         );
         this.recordNewsHistory(news, user, news.getIsDeleted().toString(), news2.getIsDeleted().toString(), diff);
+        return ApiResponse.builder()
+                .status(HttpStatus.OK)
+                .message("News restored successfully")
+                .build();
     }
 
     private void recordNewsHistory(News news, User user, String from, String to, Map<String, Object> diff) {

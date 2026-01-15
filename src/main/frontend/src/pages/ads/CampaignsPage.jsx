@@ -38,7 +38,7 @@ export const CampaignsPage = () => {
         try {
             setLoading(true);
             const response = await campaignsAPI.getAll();
-            setCampaigns(response.data || []);
+            setCampaigns(response || []);
         } catch (error) {
             console.error('Error fetching campaigns:', error);
             toast.error('Failed to load campaigns');

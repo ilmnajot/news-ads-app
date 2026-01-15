@@ -13,7 +13,7 @@ public interface NewsService {
     NewsResponse updateNewsStatus(Long id, NewsStatus newStatus);
     NewsResponse getNewsById(Long id);
     void softDeleteNews(Long id);
-    void restoreNews(Long id);
+    ApiResponse restoreNews(Long id);
     ApiResponse hardDeleteNews(Long id);
     ApiResponse getNewsHistory(Long newsId);
 }

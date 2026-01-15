@@ -12,8 +12,8 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(
-                title = "News-Ads-App Endpoints", // Optional: Qo'shimcha ma'lumot berish uchun
-                version = "1.0", // OpenAPI versiyasi noto'g'ri emas, faqat ma'lumot sifatida
+                title = "News-Ads-App Endpoints",
+                version = "1.0",
                 description = "API Documentation"
         ),
         servers = {

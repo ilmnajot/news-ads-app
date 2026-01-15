@@ -52,10 +52,10 @@ export const NewsCreatePage = () => {
             setLoading(true);
             const [catRes, tagRes] = await Promise.all([
                 categoriesAPI.getAll(),
-                tagsAPI.getAll({ page: 0, size: 100 })
+                tagsAPI.getAll()
             ]);
-            setCategories(catRes.data || []);
-            setAvailableTags(tagRes.data || []);
+            setCategories(catRes || []);
+            setAvailableTags(tagRes || []);
         } catch (error) {
             console.error('Initialization error:', error);
             toast.error('Failed to load article dependencies');
@@ -71,8 +71,8 @@ export const NewsCreatePage = () => {
         setIsUploading(true);
         try {
             const response = await mediaAPI.upload(file);
-            // Assuming response.data contains the uploaded media object with id and url
-            setFormData({ ...formData, coverMediaId: response.data.id });
+            // Assuming response contains the uploaded media object with id and url
+            setFormData({ ...formData, coverMediaId: response.id });
             setCoverPreview(URL.createObjectURL(file));
             toast.success('Media asset synchronized');
         } catch (error) {

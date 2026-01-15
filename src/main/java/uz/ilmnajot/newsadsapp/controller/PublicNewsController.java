@@ -50,7 +50,6 @@ public class PublicNewsController {
         filter.setCategoryId(categoryId);
         filter.setFrom(from);
         filter.setTo(to);
-
         return publicNewsService.getPublicNews(filter, PageRequest.of(page, size, Sort.by("publishAt").descending()));
     }
 

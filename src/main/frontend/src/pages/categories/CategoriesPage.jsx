@@ -37,7 +37,7 @@ export const CategoriesPage = () => {
         try {
             setLoading(true);
             const response = await categoriesAPI.getAll();
-            setCategories(response.data || []);
+            setCategories(response || []);
         } catch (error) {
             console.error('Error fetching categories:', error);
             toast.error('Failed to load categories');

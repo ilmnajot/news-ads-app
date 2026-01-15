@@ -44,7 +44,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserUtil userUtil;
 
     @Override
-    public JwtResponse login(UserDto.LoginDto dto) {
+    public ApiResponse login(UserDto.LoginDto dto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
 
@@ -52,30 +52,40 @@ public class AuthServiceImpl implements AuthService {
         String accessToken = this.tokenProvider.generateAccessToken(userDetails);
         String refreshToken = this.tokenProvider.generateRefreshToken(userDetails);
 
-        return JwtResponse.builder()
+        JwtResponse jwtResponse = JwtResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .accessTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(accessToken))
                 .refreshTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(refreshToken))
                 .build();
+        return ApiResponse.builder()
+                .status(HttpStatus.CREATED)
+                .message("Success")
+                .data(jwtResponse)
+                .build();
     }
 
-    public JwtResponse refreshToken(String refreshToken) {
+    public ApiResponse refreshToken(String refreshToken) {
         String username = this.tokenProvider.getUsernameFromToken(refreshToken);
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
-
         if (!tokenProvider.validateToken(refreshToken, userDetails)) {
             throw new RuntimeException("Invalid refresh token");
         }
         String newAccessToken = this.tokenProvider.generateAccessToken(userDetails);
-
-        return JwtResponse.builder()
+        JwtResponse jwtResponse = JwtResponse.builder()
                 .accessToken(newAccessToken)
                 .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .accessTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(newAccessToken))
                 .refreshTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(refreshToken))
+                .build();
+
+        return ApiResponse
+                .builder()
+                .status(HttpStatus.CREATED)
+                .message("Success")
+                .data(jwtResponse)
                 .build();
     }
 

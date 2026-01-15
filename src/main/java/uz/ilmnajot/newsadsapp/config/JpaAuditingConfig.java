@@ -21,11 +21,11 @@ import java.util.Optional;
 public class JpaAuditingConfig implements AuditorAware<Long> {
 
     private final UserSession userSession;
-
-    @PostConstruct
-    public void init() {
-        log.info("Initializing Hibernate successfully");
-    }
+//
+//    @PostConstruct
+//    public void init() {
+//        log.info("Initializing Hibernate successfully");
+//    }
 
     @Nonnull
     @Override

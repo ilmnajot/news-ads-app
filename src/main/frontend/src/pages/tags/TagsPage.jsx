@@ -27,8 +27,8 @@ export const TagsPage = () => {
     const fetchTags = async () => {
         try {
             setLoading(true);
-            const response = await tagsAPI.getAll({ page: 0, size: 100 });
-            setTags(response.data || []);
+            const response = await tagsAPI.getAll();
+            setTags(response || []);
         } catch (error) {
             console.error('Error fetching tags:', error);
             toast.error('Failed to load tags');

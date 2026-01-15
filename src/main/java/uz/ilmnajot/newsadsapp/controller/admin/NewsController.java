@@ -4,10 +4,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.format.annotation.DateTimeFormat;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import uz.ilmnajot.newsadsapp.annotation.RateLimit;
 import uz.ilmnajot.newsadsapp.dto.NewsCreateRequest;
 import uz.ilmnajot.newsadsapp.dto.NewsResponse;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
@@ -16,6 +16,7 @@ import uz.ilmnajot.newsadsapp.filter.NewsFilter;
 import uz.ilmnajot.newsadsapp.service.NewsService;
 
 import java.time.LocalDate;
+import java.util.concurrent.TimeUnit;
 
 @RestController
 @RequestMapping("/api/v1/admin/news")
@@ -24,7 +25,12 @@ public class NewsController {
 
     private final NewsService newsService;
 
-    //done
+    @RateLimit(
+            limit = 30,
+            duration = 1,
+            timeUnit = TimeUnit.MINUTES,
+            message = "Too many requests"
+    )
     @GetMapping("/get-all")
     public ApiResponse getAllNews(
             @RequestParam(value = "keyword", required = false) String keyword,
@@ -55,26 +61,29 @@ public class NewsController {
 
     //done
     @GetMapping("/{id}")
-    public ResponseEntity<NewsResponse> getNewsById(@PathVariable Long id) {
-        NewsResponse news = this.newsService.getNewsById(id);
-        return ResponseEntity.ok(news);
+    public NewsResponse getNewsById(@PathVariable Long id) {
+        return this.newsService.getNewsById(id);
     }
 
     //done
+    @RateLimit(
+            limit = 10,
+            duration = 1,
+            timeUnit = TimeUnit.MINUTES,
+            message = "Too many requests"
+    )
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
-    public ResponseEntity<NewsResponse> addNews(@Valid @RequestBody NewsCreateRequest request) {
-        NewsResponse news = this.newsService.createNews(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(news);
+    public NewsResponse addNews(@Valid @RequestBody NewsCreateRequest request) {
+        return this.newsService.createNews(request);
     }
 
     //done
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<NewsResponse> updateStatus(@PathVariable Long id,
-                                                     @RequestParam NewsStatus status) {
-        NewsResponse news = newsService.updateNewsStatus(id, status);
-        return ResponseEntity.ok(news);
+    public NewsResponse updateStatus(@PathVariable Long id,
+                                     @RequestParam NewsStatus status) {
+        return newsService.updateNewsStatus(id, status);
     }
 
     //done
@@ -88,9 +97,8 @@ public class NewsController {
     //done
     @PostMapping("/{id}/restore")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
-    public ResponseEntity<Void> restoreNews(@PathVariable Long id) {
-        newsService.restoreNews(id);
-        return ResponseEntity.ok().build();
+    public ApiResponse restoreNews(@PathVariable Long id) {
+        return newsService.restoreNews(id);
     }
 
     //done

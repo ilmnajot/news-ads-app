@@ -71,14 +71,6 @@ public class SecurityConfig {
                         // "/api/v1/admin/auth/register"
         };
 
-        // @Bean
-        // public AuthenticationProvider authenticationProvider() {
-        // DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        // authProvider.setUserDetailsService(userDetailsService);
-        // authProvider.setPasswordEncoder(passwordEncoder);
-        // return authProvider;
-        // }
-
         @Bean
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();

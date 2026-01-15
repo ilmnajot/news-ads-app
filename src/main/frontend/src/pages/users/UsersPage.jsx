@@ -32,7 +32,7 @@ export const UsersPage = () => {
     const fetchRoles = async () => {
         try {
             const response = await usersAPI.getRoles();
-            setRoles(response.data || []);
+            setRoles(response || []);
         } catch (error) {
             console.error('Error fetching roles:', error);
         }
@@ -42,7 +42,7 @@ export const UsersPage = () => {
         setLoading(true);
         try {
             const response = await usersAPI.getAll(filters);
-            setUsers(response.data || []);
+            setUsers(response || []);
         } catch (error) {
             console.error('Error fetching users:', error);
             toast.error('Failed to load users');
