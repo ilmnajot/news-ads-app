@@ -1,6 +1,7 @@
 package uz.ilmnajot.newsadsapp.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import uz.ilmnajot.newsadsapp.annotation.RateLimit;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
@@ -22,10 +23,11 @@ public class PublicAdsController {
             message = "Too many attempts"
     )
     @GetMapping("/{placementCode}")
-    public ApiResponse getAd(
+    public ResponseEntity<ApiResponse> getAd(
             @PathVariable String placementCode,
             @RequestParam(defaultValue = "uz") String lang,
             @RequestParam(required = false) Long categoryId) {
-        return this.adsAssignmentService.findActiveAssignmentsByPlacement(placementCode, lang, categoryId);
+        ApiResponse apiResponse= this.adsAssignmentService.findActiveAssignmentsByPlacement(placementCode, lang, categoryId);
+        return ResponseEntity.ok(apiResponse);
     }
 }

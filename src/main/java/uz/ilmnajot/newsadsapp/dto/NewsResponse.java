@@ -10,6 +10,7 @@ import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -17,7 +18,7 @@ import java.util.Map;
 @AllArgsConstructor
 public class NewsResponse {
     private Long id;
-    private Long authorId;
+    private UUID authorId;
     private String authorName;
     private Long categoryId;
     private String categoryTitle;

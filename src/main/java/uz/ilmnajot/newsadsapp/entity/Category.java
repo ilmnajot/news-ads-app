@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 
 import java.util.List;
 
@@ -13,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Category extends BaseEntity {
+public class Category extends BaseLongEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")

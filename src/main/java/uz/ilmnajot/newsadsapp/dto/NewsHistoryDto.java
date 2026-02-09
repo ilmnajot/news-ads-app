@@ -6,6 +6,7 @@ import uz.ilmnajot.newsadsapp.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.Map;
+import java.util.UUID;
 
 @Data
 @Builder
@@ -21,8 +22,8 @@ public class NewsHistoryDto {
     private LocalDateTime unpublishAt;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long createdBy;
-    private Long updatedBy;
+    private UUID createdBy;
+    private UUID updatedBy;
 
 
 }

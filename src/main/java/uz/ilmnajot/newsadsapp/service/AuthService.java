@@ -5,6 +5,8 @@ import uz.ilmnajot.newsadsapp.dto.JwtResponse;
 import uz.ilmnajot.newsadsapp.dto.UserDto;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 
+import java.util.UUID;
+
 public interface AuthService {
 
     ApiResponse login(UserDto.LoginDto dto);
@@ -15,13 +17,13 @@ public interface AuthService {
 
     ApiResponse getCurrentUser();
 
-    ApiResponse changeCredentials(UserDto.UpdateDto dto, Long userId);
+    ApiResponse changeCredentials(UserDto.UpdateDto dto, UUID userId);
 
     ApiResponse getAllUsers(Pageable pageable);
 
-    ApiResponse changeUserStatus(Long userId, boolean status);
+    ApiResponse changeUserStatus(UUID userId, boolean status);
 
-    ApiResponse removeUser(Long userId);
+    ApiResponse removeUser(UUID userId);
 
     ApiResponse getAllRoles();
 }

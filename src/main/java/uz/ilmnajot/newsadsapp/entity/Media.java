@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 
 @Entity
 @Table(name = "media")
@@ -11,7 +12,7 @@ import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Media extends BaseEntity {
+public class Media extends BaseLongEntity {
 
     @Column(name = "storage_key", nullable = false, length = 500)
     private String storageKey;

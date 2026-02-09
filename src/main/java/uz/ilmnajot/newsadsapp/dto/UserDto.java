@@ -8,12 +8,13 @@ import uz.ilmnajot.newsadsapp.entity.Role;
 
 import java.time.LocalDateTime;
 import java.util.Set;
+import java.util.UUID;
 
 @Builder
 @Data
 public class UserDto {
 
-    private Long id;
+    private UUID id;
     private String fullName;
     private String username;
     private String email;
@@ -21,8 +22,8 @@ public class UserDto {
     private Set<Long> roleIds;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
-    private Long createdBy;
-    private Long updatedBy;
+    private UUID createdBy;
+    private UUID updatedBy;
     private Boolean isActive;
 
     @Data

@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 
 @Entity
 @Table(name = "news_translation",
@@ -15,7 +16,7 @@ import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class NewsTranslation extends BaseEntity {
+public class NewsTranslation extends BaseLongEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id", nullable = false)

@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 
 import java.time.LocalDateTime;
@@ -16,7 +17,7 @@ import java.util.Set;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class News extends BaseEntity {
+public class News extends BaseLongEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "author_id", nullable = false)

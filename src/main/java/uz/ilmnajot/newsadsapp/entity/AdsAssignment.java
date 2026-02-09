@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.type.SqlTypes;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -16,7 +17,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdsAssignment extends BaseEntity {
+public class AdsAssignment extends BaseLongEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "placement_id", nullable = false)

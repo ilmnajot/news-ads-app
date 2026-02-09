@@ -12,6 +12,7 @@ import uz.ilmnajot.newsadsapp.dto.UserDto;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
 import uz.ilmnajot.newsadsapp.service.AuthService;
 
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 @RestController
@@ -29,7 +30,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/change-credentials/{userId}")
-    public ApiResponse changeCredentials(@PathVariable Long userId,
+    public ApiResponse changeCredentials(@PathVariable UUID userId,
                                          @RequestBody UserDto.UpdateDto dto) {
         return this.authService.changeCredentials(dto, userId);
     }
@@ -44,13 +45,13 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @PutMapping("/toggle-status/{userId}")
-    public ApiResponse changeUserStatus(@PathVariable Long userId, @RequestParam boolean status) {
+    public ApiResponse changeUserStatus(@PathVariable UUID userId, @RequestParam boolean status) {
         return this.authService.changeUserStatus(userId, status);
     }
 
     @PreAuthorize("hasRole('ADMIN')")
     @DeleteMapping("/remove-user/{userId}")
-    public ApiResponse removeUser(@PathVariable Long userId) {
+    public ApiResponse removeUser(@PathVariable UUID userId) {
         return this.authService.removeUser(userId);
     }
 

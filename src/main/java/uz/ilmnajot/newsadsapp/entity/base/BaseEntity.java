@@ -1,46 +1,34 @@
 package uz.ilmnajot.newsadsapp.entity.base;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.data.annotation.CreatedBy;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedBy;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
-@Data
+@Setter
+@Getter
 @NoArgsConstructor
 @AllArgsConstructor
 @MappedSuperclass
 @EntityListeners(AuditingEntityListener.class)
-public abstract class BaseEntity implements Serializable {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public abstract class BaseEntity {
 
     @CreatedBy
     @Column(updatable = false)
-    private Long createdBy;
+    private UUID createdBy;
 
     @LastModifiedBy
     @Column(updatable = false)
-    private Long updatedBy;
+    private UUID updatedBy;
 
     @CreatedDate
     private LocalDateTime createdAt;
-//
-//    @PrePersist
-//    public void onCreate() {
-//        if (this.createdAt == null) {
-//            this.createdAt = LocalDateTime.now();
-//        }
-//    }
 
     @LastModifiedDate
     private LocalDateTime updatedAt;

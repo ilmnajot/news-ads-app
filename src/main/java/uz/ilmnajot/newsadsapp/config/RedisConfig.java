@@ -26,78 +26,72 @@ import java.util.Map;
 @ConditionalOnProperty(name = "spring.data.redis.host")
 public class RedisConfig {
 
-    @Bean
-    public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
-        RedisTemplate<String, Object> template = new RedisTemplate<>();
-        template.setConnectionFactory(connectionFactory);
+        @Bean
+        public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
+                RedisTemplate<String, Object> template = new RedisTemplate<>();
+                template.setConnectionFactory(connectionFactory);
 
-        // Key serializer (String)
-        template.setKeySerializer(new StringRedisSerializer());
-        template.setHashKeySerializer(new StringRedisSerializer());
+                // Key serializer (String)
+                template.setKeySerializer(new StringRedisSerializer());
+                template.setHashKeySerializer(new StringRedisSerializer());
 
-        // Value serializer (JSON)
-        template.setValueSerializer(jsonRedisSerializer());
-        template.setHashValueSerializer(jsonRedisSerializer());
+                // Value serializer (JSON)
+                template.setValueSerializer(jsonRedisSerializer());
+                template.setHashValueSerializer(jsonRedisSerializer());
 
-        template.afterPropertiesSet();
-        return template;
-    }
-    @Bean
-    public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
+                template.afterPropertiesSet();
+                return template;
+        }
 
-        // Default configuration
-        RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
-                .entryTtl(Duration.ofSeconds(60))  // Default: 60 seconds
-                .serializeKeysWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(
-                                new StringRedisSerializer()
-                        )
-                )
-                .serializeValuesWith(
-                        RedisSerializationContext.SerializationPair.fromSerializer(
-                                jsonRedisSerializer()
-                        )
-                )
-                .disableCachingNullValues();
+        @Bean
+        public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 
-        // Custom TTL per cache name
-        Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
+                // Default configuration
+                RedisCacheConfiguration defaultConfig = RedisCacheConfiguration.defaultCacheConfig()
+                                .entryTtl(Duration.ofSeconds(60)) // Default: 60 seconds
+                                .serializeKeysWith(
+                                                RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                new StringRedisSerializer()))
+                                .serializeValuesWith(
+                                                RedisSerializationContext.SerializationPair.fromSerializer(
+                                                                jsonRedisSerializer()))
+                                .disableCachingNullValues();
 
-        // News list: 60 seconds
-        cacheConfigurations.put("newsList", defaultConfig.entryTtl(Duration.ofSeconds(60)));
+                // Custom TTL per cache name
+                Map<String, RedisCacheConfiguration> cacheConfigurations = new HashMap<>();
 
-        // News detail: 120 seconds
-        cacheConfigurations.put("newsDetail", defaultConfig.entryTtl(Duration.ofSeconds(120)));
+                // News list: 60 seconds
+                cacheConfigurations.put("newsList", defaultConfig.entryTtl(Duration.ofSeconds(60)));
 
-        // Categories: 5 minutes
-        cacheConfigurations.put("categories", defaultConfig.entryTtl(Duration.ofMinutes(5)));
+                // News detail: 120 seconds
+                cacheConfigurations.put("newsDetail", defaultConfig.entryTtl(Duration.ofSeconds(120)));
 
-        // Tags: 10 minutes
-        cacheConfigurations.put("tags", defaultConfig.entryTtl(Duration.ofMinutes(10)));
-        // Ads cache -
-        cacheConfigurations.put("publicAds", defaultConfig.entryTtl(Duration.ofSeconds(30)));
+                // Categories: 5 minutes
+                cacheConfigurations.put("categories", defaultConfig.entryTtl(Duration.ofMinutes(5)));
 
-        return RedisCacheManager.builder(connectionFactory)
-                .cacheDefaults(defaultConfig)
-                .withInitialCacheConfigurations(cacheConfigurations)
-                .build();
-    }
+                // Tags: 10 minutes
+                cacheConfigurations.put("tags", defaultConfig.entryTtl(Duration.ofMinutes(10)));
+                // Ads cache -
+                cacheConfigurations.put("publicAds", defaultConfig.entryTtl(Duration.ofSeconds(30)));
 
-    private GenericJackson2JsonRedisSerializer jsonRedisSerializer() {
-        ObjectMapper objectMapper = new ObjectMapper();
+                return RedisCacheManager.builder(connectionFactory)
+                                .cacheDefaults(defaultConfig)
+                                .withInitialCacheConfigurations(cacheConfigurations)
+                                .build();
+        }
 
-        objectMapper.registerModule(new JavaTimeModule());
+        private GenericJackson2JsonRedisSerializer jsonRedisSerializer() {
+                ObjectMapper objectMapper = new ObjectMapper();
+                objectMapper.registerModule(new JavaTimeModule());
 
-        // Enable type info for polymorphic deserialization
-        objectMapper.activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder()
-                        .allowIfBaseType(Object.class)
-                        .build(),
-                ObjectMapper.DefaultTyping.NON_FINAL,
-                JsonTypeInfo.As.PROPERTY
-        );
+                // Use a more robust subtype validator
+                BasicPolymorphicTypeValidator typeValidator = BasicPolymorphicTypeValidator.builder()
+                                .allowIfBaseType(Object.class)
+                                .build();
 
-        return new GenericJackson2JsonRedisSerializer(objectMapper);
-    }
+                objectMapper.activateDefaultTyping(typeValidator, ObjectMapper.DefaultTyping.NON_FINAL,
+                                JsonTypeInfo.As.PROPERTY);
+
+                return new GenericJackson2JsonRedisSerializer(objectMapper);
+        }
 }
-

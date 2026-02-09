@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 import uz.ilmnajot.newsadsapp.enums.AdsComStatus;
 
 import java.time.LocalDateTime;
@@ -15,7 +16,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdsCampaign extends BaseEntity {
+public class AdsCampaign extends BaseLongEntity {
 
     @Column(nullable = false)
     private String name;

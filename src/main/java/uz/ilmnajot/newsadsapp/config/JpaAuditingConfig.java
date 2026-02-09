@@ -14,11 +14,13 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import uz.ilmnajot.newsadsapp.util.UserSession;
 
 import java.util.Optional;
+import java.util.UUID;
+
 @Slf4j
 @RequiredArgsConstructor
 @Configuration
 @EnableJpaAuditing(auditorAwareRef = "jpaAuditingConfig")
-public class JpaAuditingConfig implements AuditorAware<Long> {
+public class JpaAuditingConfig implements AuditorAware<UUID> {
 
     private final UserSession userSession;
 //
@@ -29,8 +31,8 @@ public class JpaAuditingConfig implements AuditorAware<Long> {
 
     @Nonnull
     @Override
-    public Optional<Long> getCurrentAuditor() {
-        Long userId = userSession.getUser();
+    public Optional<UUID> getCurrentAuditor() {
+        UUID userId = userSession.getUser();
         log.info("Current auditor: {}", userId);
         return Optional.ofNullable(userId);
     }

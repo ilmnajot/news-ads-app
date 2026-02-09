@@ -28,6 +28,7 @@ import uz.ilmnajot.newsadsapp.util.UserUtil;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -123,7 +124,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResponse changeCredentials(UserDto.UpdateDto dto, Long userId) {
+    public ApiResponse changeCredentials(UserDto.UpdateDto dto, UUID userId) {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         this.userMapper.toUpdate(user, dto);
@@ -152,7 +153,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResponse changeUserStatus(Long userId, boolean status) {
+    public ApiResponse changeUserStatus(UUID userId, boolean status) {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         user.setIsActive(status);
@@ -165,7 +166,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public ApiResponse removeUser(Long userId) {
+    public ApiResponse removeUser(UUID userId) {
         try {
             this.userRepository.deleteById(userId);
 

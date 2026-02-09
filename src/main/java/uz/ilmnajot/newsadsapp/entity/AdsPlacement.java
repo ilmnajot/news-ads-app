@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 
 @Entity
 @Table(name = "ads_placement")
@@ -11,7 +12,7 @@ import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdsPlacement extends BaseEntity {
+public class AdsPlacement extends BaseLongEntity {
 
     @Column(nullable = false, unique = true, length = 100)
     private String code;

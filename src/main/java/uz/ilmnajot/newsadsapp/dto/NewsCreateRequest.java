@@ -16,7 +16,7 @@ public class NewsCreateRequest {
     private Long categoryId;
     
     private Long coverMediaId;
-    
+    //draft
     @NotNull(message = "Status is required")
     private String status;
     

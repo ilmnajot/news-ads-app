@@ -6,6 +6,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseUUIDEntity;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -18,7 +20,7 @@ import java.util.stream.Collectors;
 @Builder
 @Table(name = "users")
 //done
-public class User extends BaseEntity implements UserDetails {
+public class User extends BaseUUIDEntity implements UserDetails {
 
     @Column(nullable = false, unique = true, length = 50)
     private String username;

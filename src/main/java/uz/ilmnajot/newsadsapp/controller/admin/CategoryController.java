@@ -1,5 +1,6 @@
 package uz.ilmnajot.newsadsapp.controller.admin;
 
+import io.swagger.v3.oas.annotations.Hidden;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -11,6 +12,7 @@ import uz.ilmnajot.newsadsapp.service.CategoryService;
 @RestController
 @RequestMapping("/api/v1/admin/categories")
 @RequiredArgsConstructor
+@Hidden
 public class CategoryController {
 
     private final CategoryService categoryService;

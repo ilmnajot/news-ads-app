@@ -3,6 +3,7 @@ package uz.ilmnajot.newsadsapp.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
+import uz.ilmnajot.newsadsapp.entity.base.BaseLongEntity;
 
 @Entity
 @Table(name = "ads_creative_translation",
@@ -12,7 +13,7 @@ import uz.ilmnajot.newsadsapp.entity.base.BaseEntity;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class AdsCreativeTranslation extends BaseEntity {
+public class AdsCreativeTranslation extends BaseLongEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "creative_id", nullable = false)
