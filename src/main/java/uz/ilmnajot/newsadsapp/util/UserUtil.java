@@ -12,6 +12,7 @@ import uz.ilmnajot.newsadsapp.repository.UserRepository;
 @Slf4j
 public class UserUtil {
     private final UserRepository userRepository;
+    // getCurrentUser
     public User getCurrentUser(){
         String username = SecurityContextHolder
                 .getContext()

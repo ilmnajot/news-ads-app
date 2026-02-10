@@ -6,6 +6,7 @@ import uz.ilmnajot.newsadsapp.entity.AdsAssignment;
 
 @Component
 public class AdsAssignmentMapper {
+    // toDto
     public AdsAssignmentDto toDto(AdsAssignment assignment) {
         return AdsAssignmentDto.builder()
                 .id(assignment.getId())

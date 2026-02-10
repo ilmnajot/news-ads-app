@@ -8,12 +8,19 @@ import uz.ilmnajot.newsadsapp.enums.NewsStatus;
 import uz.ilmnajot.newsadsapp.filter.NewsFilter;
 
 public interface NewsService {
-     NewsResponse createNews(NewsCreateRequest request);
+    NewsResponse createNews(NewsCreateRequest request);
+
     ApiResponse getNews(Pageable pageable, NewsFilter filter);
+
     NewsResponse updateNewsStatus(Long id, NewsStatus newStatus);
+
     NewsResponse getNewsById(Long id);
+
     void softDeleteNews(Long id);
+
     ApiResponse restoreNews(Long id);
+
     ApiResponse hardDeleteNews(Long id);
+
     ApiResponse getNewsHistory(Long newsId);
 }

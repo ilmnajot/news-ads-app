@@ -39,6 +39,7 @@ public class MediaServiceImpl implements MediaService {
     private String endpoint;
 
     @Override
+    // uploadMedia
     public ApiResponse uploadMedia(MultipartFile file) {
         log.info("Uploading media...");
         User currentUser = this.userUtil.getCurrentUser();
@@ -100,6 +101,7 @@ public class MediaServiceImpl implements MediaService {
     }
 
     @Override
+    // deleteMedia
     public ApiResponse deleteMedia(Long id) {
         Media media = mediaRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Media not found"));

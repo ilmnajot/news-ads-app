@@ -27,6 +27,7 @@ import java.util.Map;
 public class RedisConfig {
 
         @Bean
+        // redisTemplate
         public RedisTemplate<String, Object> redisTemplate(RedisConnectionFactory connectionFactory) {
                 RedisTemplate<String, Object> template = new RedisTemplate<>();
                 template.setConnectionFactory(connectionFactory);
@@ -44,6 +45,7 @@ public class RedisConfig {
         }
 
         @Bean
+        // cacheManager
         public CacheManager cacheManager(RedisConnectionFactory connectionFactory) {
 
                 // Default configuration
@@ -80,6 +82,7 @@ public class RedisConfig {
                                 .build();
         }
 
+        // jsonRedisSerializer
         private GenericJackson2JsonRedisSerializer jsonRedisSerializer() {
                 ObjectMapper objectMapper = new ObjectMapper();
                 objectMapper.registerModule(new JavaTimeModule());

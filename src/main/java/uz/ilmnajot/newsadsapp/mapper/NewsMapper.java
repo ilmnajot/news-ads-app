@@ -15,6 +15,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class NewsMapper {
+    // toDto
     public NewsResponse toDto(News news) {
         Map<String, NewsResponse.NewsTranslationResponse> translations = news.getTranslations().stream()
                 .collect(Collectors.toMap(
@@ -54,6 +55,7 @@ public class NewsMapper {
                 .tags(tags)
                 .build();
     }
+    // toDto
     public List<NewsResponse> toDto(List<News> news){
         if (news.isEmpty()){
             return Collections.emptyList();
@@ -65,9 +67,7 @@ public class NewsMapper {
     }
 
 
-    /**
-     * Map to public DTO (faqat 1 ta til)
-     */
+    // Map to public DTO (faqat 1 ta til)
     public NewsPublicResponse toPublicDto(News news, String lang) {
 
         // Get translation for requested language
@@ -100,6 +100,7 @@ public class NewsMapper {
                 .build();
     }
 
+    // getCategoryTitle
     private String getCategoryTitle(News news, String lang) {
         if (news.getCategory() == null) return null;
         return news.getCategory().getTranslations().stream()
@@ -109,6 +110,7 @@ public class NewsMapper {
                 .orElse(null);
     }
 
+    // getCategorySlug
     private String getCategorySlug(News news, String lang) {
         if (news.getCategory() == null) return null;
         return news.getCategory().getTranslations().stream()

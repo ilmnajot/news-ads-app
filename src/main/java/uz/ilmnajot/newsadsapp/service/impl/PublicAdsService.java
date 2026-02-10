@@ -21,18 +21,18 @@ import java.util.stream.Collectors;
 public class PublicAdsService {
 
     private final AdsAssignmentRepository assignmentRepository;
+    // Random
     private final Random random = new Random();
 
-    /**
-     * Get ad for placement (with cache)
-     * Taskda: GET /public/ads/{placementCode}?lang=uz&categoryId=
-     */
+    // Get ad for placement (with cache)
+// Taskda: GET /public/ads/{placementCode}?lang=uz&categoryId=
     @Cacheable(
             value = "publicAds",
             key = "'placement:' + #placementCode + ':lang:' + #lang + ':cat:' + (#categoryId != null ? #categoryId : 'all')",
             unless = "#result == null"
     )
     @Transactional(readOnly = true)
+    // getAdForPlacement
     public PublicAdDto getAdForPlacement(String placementCode, String lang, Long categoryId) {
 
         log.info("PUBLIC AD - Cache MISS: placement={}, lang={}, categoryId={}",
@@ -70,9 +70,7 @@ public class PublicAdsService {
         return mapToPublicDto(selected, lang);
     }
 
-    /**
-     * Check if assignment matches lang filter
-     */
+    // Check if assignment matches lang filter
     private boolean matchesLangFilter(AdsAssignment assignment, String lang) {
         List<String> langFilter = assignment.getLangFilter();
 
@@ -85,9 +83,7 @@ public class PublicAdsService {
         return langFilter.contains(lang);
     }
 
-    /**
-     * Check if assignment matches category filter
-     */
+    // Check if assignment matches category filter
     private boolean matchesCategoryFilter(AdsAssignment assignment, Long categoryId) {
         List<Long> categoryFilter = assignment.getCategoryFilter();
 
@@ -105,18 +101,16 @@ public class PublicAdsService {
         return categoryFilter.contains(categoryId);
     }
 
-    /**
-     * Weighted random selection
-     * <p>
-     * Example:
-     * - Ad A: weight 70
-     * - Ad B: weight 30
-     * Total: 100
-     * <p>
-     * Random number 0-99:
-     * - 0-69 → Ad A (70%)
-     * - 70-99 → Ad B (30%)
-     */
+    // Weighted random selection
+// <p>
+// Example:
+// - Ad A: weight 70
+// - Ad B: weight 30
+// Total: 100
+// <p>
+// Random number 0-99:
+// - 0-69 → Ad A (70%)
+// - 70-99 → Ad B (30%)
     private AdsAssignment selectByWeight(List<AdsAssignment> assignments) {
 
         // Calculate total weight
@@ -145,9 +139,7 @@ public class PublicAdsService {
         return assignments.get(assignments.size() - 1);
     }
 
-    /**
-     * Entity → Public DTO mapping
-     */
+    // Entity → Public DTO mapping
     private PublicAdDto mapToPublicDto(AdsAssignment assignment, String lang) {
 
         // Get translation for requested language

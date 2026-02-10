@@ -30,6 +30,7 @@ public class SecurityConfig {
         private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
         @Bean
+        // securityFilterChain
         public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
                 return http
                                 .csrf(AbstractHttpConfigurer::disable)
@@ -62,7 +63,8 @@ public class SecurityConfig {
                         "/actuator/**",
                         "/api/v1/public/**",
                         "/api/v1/admin/auth/login",
-                        "/api/v1/admin/auth/refresh"
+                        "/api/v1/admin/auth/refresh",
+                        "/api/v1/admin/auth/register"
         };
         // to test for now
         private static final String[] BLACK_LIST = {
@@ -72,6 +74,7 @@ public class SecurityConfig {
         };
 
         @Bean
+        // corsConfigurationSource
         public CorsConfigurationSource corsConfigurationSource() {
                 CorsConfiguration configuration = new CorsConfiguration();
                 configuration.setAllowedOrigins(List.of(

@@ -27,6 +27,7 @@ public class AdsPlacementServiceImpl implements AdsPlacementService {
 
     @Override
     @Transactional
+    // createPlacement
     public ApiResponse createPlacement(AdsPlacementDto.CreatePlacement request) {
 
         // Check if code already exists
@@ -46,6 +47,7 @@ public class AdsPlacementServiceImpl implements AdsPlacementService {
     }
 
     @Override
+    // getAllPlacements
     public ApiResponse getAllPlacements() {
 
         List<AdsPlacement> placements = placementRepository.findAll();
@@ -61,6 +63,7 @@ public class AdsPlacementServiceImpl implements AdsPlacementService {
     }
 
     @Override
+    // getPlacementById
     public ApiResponse getPlacementById(Long id) {
         AdsPlacement placement = placementRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Placement not found"));
@@ -73,6 +76,7 @@ public class AdsPlacementServiceImpl implements AdsPlacementService {
 
     @Transactional
     @Override
+    // updatePlacement
     public ApiResponse updatePlacement(Long id, AdsPlacementDto.UpdatePlacement request) {
 
         AdsPlacement placement = placementRepository.findById(id)
@@ -99,6 +103,7 @@ public class AdsPlacementServiceImpl implements AdsPlacementService {
     }
 
     @Override
+    // deletePlacement
     public ApiResponse deletePlacement(Long id) {
 
         if (!placementRepository.existsById(id)) {

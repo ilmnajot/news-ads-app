@@ -12,32 +12,25 @@ import uz.ilmnajot.newsadsapp.service.CategoryService;
 @RestController
 @RequestMapping("/api/v1/admin/categories")
 @RequiredArgsConstructor
-@Hidden
 public class CategoryController {
 
     private final CategoryService categoryService;
 
-    /**
-     * CREATE - Yangi kategoriya yaratish
-     */
+     // CREATE - Yangi kategoriya yaratish
     @PostMapping("/add")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ApiResponse addCategory(@Valid @RequestBody CategoryDto.AddCategory dto) {
         return categoryService.addCategory(dto);
     }
 
-    /**
-     * READ - Barcha kategoriyalar
-     */
+     // READ - Barcha kategoriyalar
     @GetMapping("/get-all")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     public ApiResponse getAllCategories() {
         return categoryService.getAllCategories();
     }
 
-    /**
-     * READ - Barcha kategoriyalar til bo'yicha
-     */
+     // READ - Barcha kategoriyalar til bo'yicha
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     @GetMapping("/get-all-by-lang")
     public ApiResponse getAllCategoriesByLang(
@@ -45,9 +38,8 @@ public class CategoryController {
         return categoryService.getAllCategoriesByLang(lang);
     }
 
-    /**
-     * Bitta kategoriya (lang bilan)
-     */
+
+     // Bitta kategoriya (lang bilan)
     @GetMapping("/{id}/lang/{lang}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     public ApiResponse getCategoryByIdAndLang(
@@ -56,9 +48,7 @@ public class CategoryController {
         return categoryService.getCategoryByIdAndLang(id, lang);
     }
 
-    /**
-     * READ - Bitta kategoriya (ID bo'yicha)
-     */
+     // READ - Bitta kategoriya (ID bo'yicha)
     @GetMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     public ApiResponse getCategoryById(@PathVariable Long id) {
@@ -66,9 +56,7 @@ public class CategoryController {
 
     }
 
-    /**
-     * READ - Slug va lang bo'yicha kategoriya
-     */
+     // READ - Slug va lang bo'yicha kategoriya
     @GetMapping("/slug/{slug}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR', 'AUTHOR')")
     public ApiResponse getCategoryBySlug(
@@ -78,9 +66,7 @@ public class CategoryController {
 
     }
 
-    /**
-     * UPDATE - Kategoriyani yangilash
-     */
+     // UPDATE - Kategoriyani yangilash
     @PutMapping("/{id}")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ApiResponse updateCategory(
@@ -90,9 +76,7 @@ public class CategoryController {
 
     }
 
-    /**
-     * PATCH - Kategoriya statusini o'zgartirish
-     */
+     // PATCH - Kategoriya statusini o'zgartirish
     @PatchMapping("/{id}/toggle-status")
     @PreAuthorize("hasAnyRole('ADMIN', 'EDITOR')")
     public ApiResponse toggleStatus(@PathVariable Long id) {
@@ -100,9 +84,7 @@ public class CategoryController {
 
     }
 
-    /**
-     * DELETE - Kategoriyani o'chirish
-     */
+     // DELETE - Kategoriyani o'chirish
     @DeleteMapping("/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ApiResponse deleteCategory(@PathVariable Long id) {

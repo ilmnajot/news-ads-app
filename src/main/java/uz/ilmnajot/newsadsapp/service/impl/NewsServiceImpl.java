@@ -82,10 +82,8 @@ public class NewsServiceImpl implements NewsService {
             String lang = entry.getKey();
             NewsCreateRequest.NewsTranslationRequest tr = entry.getValue();
 
-            String slug = tr.getSlug();
-            if (slug == null || slug.isEmpty()) {
-                slug = slugGenerator.generateSlug(tr.getTitle());
-            }
+           String slug = slugGenerator.generateSlug(tr.getTitle());
+
             NewsTranslation translation = NewsTranslation.builder()
                     .news(news)
                     .lang(lang)
@@ -115,6 +113,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
+    // getNews
     public ApiResponse getNews(Pageable pageable, NewsFilter filter) {
         Page<News> page = this.newsRepository.findAll(filter, pageable);
         List<NewsResponse> list = this.newsMapper.toDto(page.getContent());
@@ -128,6 +127,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
+    // getNewsById
     public NewsResponse getNewsById(Long id) {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
@@ -136,6 +136,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
+    // updateNewsStatus
     public NewsResponse updateNewsStatus(Long id, NewsStatus newStatus) {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
@@ -174,6 +175,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
+    // softDeleteNews
     public void softDeleteNews(Long id) {
         News news = newsRepository.findByIdAndIsDeletedFalse(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
@@ -199,6 +201,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
+    // restoreNews
     public ApiResponse restoreNews(Long id) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("News not found"));
@@ -225,6 +228,7 @@ public class NewsServiceImpl implements NewsService {
                 .build();
     }
 
+    // recordNewsHistory
     private void recordNewsHistory(News news, User user, String from, String to, Map<String, Object> diff) {
         NewsHistory history = NewsHistory.builder()
                 .news(news)           // ← qo'shildi!
@@ -238,6 +242,7 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
+    // hardDeleteNews
     public ApiResponse hardDeleteNews(Long id) {
         if (!newsRepository.existsById(id)) {
             throw new ResourceNotFoundException("News not found");
@@ -256,6 +261,7 @@ public class NewsServiceImpl implements NewsService {
     }
 
     @Override
+    // getNewsHistory
     public ApiResponse getNewsHistory(Long newsId) {
         List<NewsHistory> historyList = newsHistoryRepository.findByNewsIdOrderByCreatedAtDesc(newsId);
         List<NewsHistoryDto> dtoList = this.newsHistoryMapper.toDto(historyList);
@@ -267,6 +273,7 @@ public class NewsServiceImpl implements NewsService {
 
     }
 
+    // recordStatusChange
     private void recordStatusChange(News news, String toStatus, User user) {
         NewsHistory history = NewsHistory.builder()
                 .news(news)
@@ -277,6 +284,7 @@ public class NewsServiceImpl implements NewsService {
         newsHistoryRepository.save(history);
     }
 
+    // getCurrentUser
     private User getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String username = authentication.getName();

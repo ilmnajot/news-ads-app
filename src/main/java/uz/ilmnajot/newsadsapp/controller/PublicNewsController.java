@@ -19,12 +19,10 @@ import java.util.concurrent.TimeUnit;
 public class PublicNewsController {
     private final PublicNewsService publicNewsService;
 
-    /**
-     * Get public news list
-     * GET /api/v1/public/news?lang=uz&page=0&size=10&category=1&tag=futbol
-     * PUBLIC NEWS SEARCH - 60 per minute
-     * Allows more requests for public
-     */
+    // Get public news list
+// GET /api/v1/public/news?lang=uz&page=0&size=10&category=1&tag=futbol
+// PUBLIC NEWS SEARCH - 60 per minute
+// Allows more requests for public
 
     @RateLimit(
             limit = 60,
@@ -53,10 +51,8 @@ public class PublicNewsController {
         return publicNewsService.getPublicNews(filter, PageRequest.of(page, size, Sort.by("publishAt").descending()));
     }
 
-    /**
-     * Get single news by slug
-     * GET /api/v1/public/news/ozbekiston-qatarni-yengdi?lang=uz
-     */
+    // Get single news by slug
+// GET /api/v1/public/news/ozbekiston-qatarni-yengdi?lang=uz
     @GetMapping("/{slug}")
     public ApiResponse getNewsBySlug(
             @PathVariable String slug,
@@ -71,6 +67,7 @@ public class PublicNewsController {
     }
 
     @GetMapping("/tags")
+    // getPublicTags
     public ApiResponse getPublicTags() {
         return publicNewsService.getPublicTags();
     }

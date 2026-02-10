@@ -24,6 +24,7 @@ public class GlobalException {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(MethodArgumentNotValidException.class)
+    // handleValidationException
     public ApiResponse handleValidationException(MethodArgumentNotValidException e) {
         Map<String, String> errors = new HashMap<>();
 
@@ -42,6 +43,7 @@ public class GlobalException {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {AlreadyExistException.class})
+    // handleAlreadyExistException
     public ApiResponse handleAlreadyExistException(AlreadyExistException e) {
         return ApiResponse.builder()
                 .message(e.getMessage())
@@ -52,6 +54,7 @@ public class GlobalException {
 
     @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(value = {ResourceNotFoundException.class})
+    // resourceNotFoundException
     public ApiResponse resourceNotFoundException(ResourceNotFoundException e) {
         return ApiResponse.builder()
                 .message(e.getMessage())
@@ -61,6 +64,7 @@ public class GlobalException {
 
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ExceptionHandler(value = {BadRequestException.class})
+    // badRequestException
     public ApiResponse badRequestException(BadRequestException e) {
         return ApiResponse.builder()
                 .message(e.getMessage())
@@ -70,6 +74,7 @@ public class GlobalException {
 
     @ResponseStatus(HttpStatus.FORBIDDEN)
     @ExceptionHandler(AccessDeniedException.class)
+    // handleAccessDeniedException
     public ResponseEntity<Map<String, String>> handleAccessDeniedException(AccessDeniedException ex) {
         Map<String, String> response = new HashMap<>();
         response.put("error", "Sizga ruxsat berilmagan! " +
@@ -79,6 +84,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(value = {NoHandlerFoundException.class})
+    // handleException
     public ApiResponse handleException(NoHandlerFoundException ex) {
         log.error("NoHandlerFoundException -> ", ex);
         return ApiResponse.builder()
@@ -88,6 +94,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(value = {HttpRequestMethodNotSupportedException.class})
+    // handleException
     public ApiResponse handleException(HttpRequestMethodNotSupportedException ex) {
         log.error("HttpRequestMethodNotSupportedException -> ", ex);
         return ApiResponse.builder()
@@ -97,6 +104,7 @@ public class GlobalException {
     }
 
     @ExceptionHandler(RateLimitExceededException.class)
+    // handleRateLimitExceeded
     public ResponseEntity<ApiResponse> handleRateLimitExceeded(RateLimitExceededException ex) {
 
         ApiResponse response = ApiResponse.builder()

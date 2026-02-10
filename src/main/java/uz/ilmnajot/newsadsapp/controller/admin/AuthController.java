@@ -24,6 +24,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/user/me")
+    // getCurrentUser
     public ApiResponse getCurrentUser() {
         return authService.getCurrentUser();
     }
@@ -55,17 +56,15 @@ public class AuthController {
         return this.authService.removeUser(userId);
     }
 
-    @PreAuthorize("hasRole('ADMIN')")
+    //    @PreAuthorize("hasRole('ADMIN')")
     @RateLimit(limit = 10, duration = 1, timeUnit = TimeUnit.MINUTES, message = "Too many register attempts")
     @PostMapping("/register")
     public ApiResponse registerUser(@RequestBody UserDto.AddUserDto dto) {
         return this.authService.registerUser(dto);
     }
 
-    /**
-     * LOGIN - 5 attempts per minute
-     * CRITICAL: Prevents brute force attacks
-     */
+    // LOGIN - 5 attempts per minute
+// CRITICAL: Prevents brute force attacks
 
     @RateLimit(limit = 5, duration = 1, timeUnit = TimeUnit.MINUTES, message = "Too many login attempts")
     @PostMapping("/login")
@@ -73,21 +72,15 @@ public class AuthController {
         return authService.login(dto);
     }
 
-    /**
-     * done
-     *
-     */
+    // done
     @RateLimit(limit = 5, duration = 1, timeUnit = TimeUnit.MINUTES, message = "Too many attempts")
     @PostMapping("/refresh")
     public ApiResponse refreshToken(@RequestParam String refreshToken) {
         return authService.refreshToken(refreshToken);
     }
 
-    /**
-     * need to ask if server side logout is needed
-     * if client-side logout is enough, then we don't need server side logout
-     *
-     */
+    // need to ask if server side logout is needed
+    // if client-side logout is enough, then we don't need server side logout
     @PostMapping("/logout")
     public ResponseEntity<Void> logout() {
         return ResponseEntity.noContent().build();
@@ -95,6 +88,7 @@ public class AuthController {
 
     @PreAuthorize("hasRole('ADMIN')")
     @GetMapping("/get-roles")
+    // getRoles
     public ApiResponse getRoles() {
         return this.authService.getAllRoles();
     }

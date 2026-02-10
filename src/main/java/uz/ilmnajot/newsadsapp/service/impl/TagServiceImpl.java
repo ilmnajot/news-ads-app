@@ -24,6 +24,7 @@ public class TagServiceImpl implements TagService {
 
 
     @Override
+    // addTag
     public ApiResponse addTag(TagDto.AddTag dto) {
         if (this.tagRepository.existsByCode(dto.getCode())) {
             return ApiResponse.builder()
@@ -42,6 +43,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    // getAllTags
     public ApiResponse getAllTags(Pageable pageable) {
         Page<Tag> page = this.tagRepository.findAll(pageable);
         if (page.isEmpty()) {
@@ -59,6 +61,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    // deleteTag
     public ApiResponse deleteTag(Long tagId) {
         Tag tag = this.tagRepository.findTagByIdAndIsActiveTrue(tagId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
@@ -71,6 +74,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    // updateTag
     public ApiResponse updateTag(Long tagId, TagDto.UpdateTag dto) {
         Tag tag = this.tagRepository.findById(tagId)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found!"));
@@ -83,6 +87,7 @@ public class TagServiceImpl implements TagService {
     }
 
     @Override
+    // getTagById
     public ApiResponse getTagById(Long id) {
         Tag tag = this.tagRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Tag not found"));

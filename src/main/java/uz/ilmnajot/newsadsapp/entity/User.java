@@ -46,6 +46,7 @@ public class User extends BaseUUIDEntity implements UserDetails {
     private Set<Role> roles;
 
     @Override
+    // getAuthorities
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return roles
                 .stream()
@@ -54,31 +55,37 @@ public class User extends BaseUUIDEntity implements UserDetails {
     }
 
     @Override
+    // getPassword
     public String getPassword() {
         return this.password;
     }
 
     @Override
+    // getUsername
     public String getUsername() {
         return this.username;
     }
 
     @Override
+    // isAccountNonExpired
     public boolean isAccountNonExpired() {
         return true;
     }
 
     @Override
+    // isAccountNonLocked
     public boolean isAccountNonLocked() {
         return true;
     }
 
     @Override
+    // isCredentialsNonExpired
     public boolean isCredentialsNonExpired() {
         return true;
     }
 
     @Override
+    // isEnabled
     public boolean isEnabled() {
         return isActive != null && isActive;
     }

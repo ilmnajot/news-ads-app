@@ -37,8 +37,6 @@ public class NewsCreateRequest {
         @Size(min = 3, max = 500, message = "Title must be between 3 and 500 characters")
         private String title;
         
-        private String slug;
-        
         @Size(max = 5000, message = "Summary must not exceed 5000 characters")
         private String summary;
         

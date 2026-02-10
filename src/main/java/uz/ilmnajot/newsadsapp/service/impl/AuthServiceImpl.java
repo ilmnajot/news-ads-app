@@ -12,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import uz.ilmnajot.newsadsapp.dto.JwtResponse;
 import uz.ilmnajot.newsadsapp.dto.UserDto;
 import uz.ilmnajot.newsadsapp.dto.common.ApiResponse;
@@ -45,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     private final UserUtil userUtil;
 
     @Override
+    // login
     public ApiResponse login(UserDto.LoginDto dto) {
         authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword()));
@@ -67,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    // refreshToken
     public ApiResponse refreshToken(String refreshToken) {
         String username = this.tokenProvider.getUsernameFromToken(refreshToken);
         UserDetails userDetails = this.userDetailsService.loadUserByUsername(username);
@@ -76,10 +79,8 @@ public class AuthServiceImpl implements AuthService {
         String newAccessToken = this.tokenProvider.generateAccessToken(userDetails);
         JwtResponse jwtResponse = JwtResponse.builder()
                 .accessToken(newAccessToken)
-                .refreshToken(refreshToken)
                 .tokenType("Bearer")
                 .accessTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(newAccessToken))
-                .refreshTokenExpireDate(this.tokenProvider.getExpirationDateFromToken(refreshToken))
                 .build();
 
         return ApiResponse
@@ -90,6 +91,8 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    // registerUser
+    @Transactional
     public ApiResponse registerUser(UserDto.AddUserDto dto) {
         log.info("ROLLAR {}",
                 Objects.requireNonNull(SecurityContextHolder.getContext().getAuthentication()).getAuthorities());
@@ -113,6 +116,7 @@ public class AuthServiceImpl implements AuthService {
                 .build();
     }
 
+    // getCurrentUser
     @Override
     public ApiResponse getCurrentUser() {
         User user = this.userUtil.getCurrentUser();
@@ -124,6 +128,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    // changeCredentials
     public ApiResponse changeCredentials(UserDto.UpdateDto dto, UUID userId) {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -141,6 +146,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    // getAllUsers
     public ApiResponse getAllUsers(Pageable pageable) {
         Page<User> userPage = this.userRepository.findAll(pageable);
         return ApiResponse.builder()
@@ -153,6 +159,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    // changeUserStatus
     public ApiResponse changeUserStatus(UUID userId, boolean status) {
         User user = this.userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
@@ -166,6 +173,7 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
+    // removeUser
     public ApiResponse removeUser(UUID userId) {
         try {
             this.userRepository.deleteById(userId);
@@ -182,12 +190,16 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    // getAllRoles
     @Override
     public ApiResponse getAllRoles() {
         return ApiResponse.builder()
                 .status(HttpStatus.OK)
                 .message("Success")
-                .data(this.roleRepository.findAll().stream().filter(role -> !role.getDeleted()).toList())
+                .data(this.roleRepository.findAll()
+                        .stream()
+                        .filter(role -> !role.getDeleted())
+                        .toList())
                 .build();
     }
 

@@ -15,6 +15,7 @@ public class SlugGenerators{
     private static final Pattern EDGES_DASHES = Pattern.compile("(^-|-$)");
     private static final Pattern MULTIPLE_DASHES = Pattern.compile("-+");
 
+    // generate
     public static String generate(String input) {
         if (input == null || input.trim().isEmpty()) {
             return "";
@@ -44,6 +45,7 @@ public class SlugGenerators{
         return normalized;
     }
 
+    // transliterate
     private static String transliterate(String text) {
         // Basic transliteration map for Cyrillic to Latin
         StringBuilder result = new StringBuilder();
@@ -53,6 +55,7 @@ public class SlugGenerators{
         return result.toString();
     }
 
+    // transliterateChar
     private static String transliterateChar(char c) {
         return switch (c) {
             // Russian Cyrillic
@@ -98,6 +101,7 @@ public class SlugGenerators{
         };
     }
 
+    // generateUnique
     public static String generateUnique(String base, SlugChecker checker) {
         String slug = generate(base);
         if (slug.isEmpty()) {

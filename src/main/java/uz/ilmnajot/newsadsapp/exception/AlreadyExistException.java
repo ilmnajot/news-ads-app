@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 @ResponseStatus(HttpStatus.CONFLICT)
 public class AlreadyExistException extends RuntimeException {
 
+    // AlreadyExistException
     public AlreadyExistException(String message) {
         super(message);
     }

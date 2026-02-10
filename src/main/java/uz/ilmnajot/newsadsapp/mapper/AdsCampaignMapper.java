@@ -7,6 +7,7 @@ import uz.ilmnajot.newsadsapp.entity.AdsCampaign;
 @Component
 public class AdsCampaignMapper {
 
+    // toDto
     public AdsCampaignDto toDto(AdsCampaign campaign) {
         return AdsCampaignDto.builder()
                 .id(campaign.getId())

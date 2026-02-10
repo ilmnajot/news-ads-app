@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 @Component
 public class CategoryMapper {
+    // toDto
     public CategoryDto toDto(Category category) {
 
         List<CategoryTranslationDto> translationDtos = category.getTranslations().stream()

@@ -7,6 +7,7 @@ import uz.ilmnajot.newsadsapp.entity.AdsPlacement;
 @Component
 public class AdsPlacementMapper {
 
+    // toDto
     public AdsPlacementDto toDto(AdsPlacement ads) {
         return AdsPlacementDto.builder()
                 .id(ads.getId())
@@ -21,6 +22,7 @@ public class AdsPlacementMapper {
                 .build();
     }
 
+    // toEntity
     public AdsPlacement toEntity(AdsPlacementDto.CreatePlacement dto) {
         if (dto == null) return null;
         return AdsPlacement.builder()
@@ -30,6 +32,7 @@ public class AdsPlacementMapper {
                 .build();
     }
 
+    // toUpdate
     public void toUpdate(AdsPlacement entity, AdsPlacementDto.UpdatePlacement dto) {
         if (dto == null) return;
         if (dto.getTitle() != null && !dto.getTitle().isEmpty()) {

@@ -15,6 +15,7 @@ public class NewsHistoryMapper {
 
     private final NewsMapper newsMapper;
 
+    // toDto
     public NewsHistoryDto toDto(NewsHistory history) {
         NewsResponse dto = newsMapper.toDto(history.getNews());
         return NewsHistoryDto.builder()
@@ -33,6 +34,7 @@ public class NewsHistoryMapper {
 
     }
 
+    // toDto
     public List<NewsHistoryDto> toDto(List<NewsHistory> historyList) {
         if (historyList.isEmpty()) {
             return new ArrayList<>();

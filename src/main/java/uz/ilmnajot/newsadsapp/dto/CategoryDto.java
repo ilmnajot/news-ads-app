@@ -26,7 +26,7 @@ public class CategoryDto {
 
     @Data
     public static class AddCategory{
-        @NotNull
+//        @NotNull
         private Long parentId;
         @NotNull
         private List<CategoryTranslationDto.AddCategoryTranslation> translationsDtoList;

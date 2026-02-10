@@ -30,131 +30,113 @@ import java.util.List;
 @Service
 @Slf4j
 public class PublicNewsServiceImpl implements PublicNewsService {
-    private final NewsRepository newsRepository;
-    private final NewsMapper newsMapper;
-    private final CategoryRepository categoryRepository;
-    private final CategoryMapper categoryMapper;
-    private final TagRepository tagRepository;
+        private final NewsRepository newsRepository;
+        private final NewsMapper newsMapper;
+        private final CategoryRepository categoryRepository;
+        private final CategoryMapper categoryMapper;
+        private final TagRepository tagRepository;
 
-    /**
-     * Get public news list with filters and cache
-     */
-//    @Cacheable(
-//            value = "newsList",
-//            key = "'lang:' + #lang +" +
-//                    "':page:' + #pageable.pageNumber + " +
-//                    "':size:' + #pageable.pageSize + " +
-//                    "':category:' + (#categoryId != null ? #categoryId : 'all') + " +
-//                    "':tag:' + (#tag != null ? #tag : 'all')",
-//            unless = "#result == null || #result.data == null || #result.data.isEmpty()"
-//    )
-    @Cacheable(
-            value = "newsList",
-            key = "'lang:' + #filter.lang + " +
-                    "':page:' + #pageable.pageNumber + " +
-                    "':size:' + #pageable.pageSize + " +
-                    "':category:' + (#filter.categoryId != null ? #filter.categoryId : 'all') + " +
-                    "':tag:' + (#filter.tag != null ? #filter.tag : 'all')",
-            unless = "#result == null || #result.data == null || #result.data.isEmpty()"
-    )
-    @Transactional(readOnly = true)
-    public ApiResponse getPublicNews(
-            NewsFilter filter, Pageable pageable) {
+        // Get public news list with filters and cache
+        // @Cacheable(
+        // value = "newsList",
+        // key = "'lang:' + #lang +" +
+        // "':page:' + #pageable.pageNumber + " +
+        // "':size:' + #pageable.pageSize + " +
+        // "':category:' + (#categoryId != null ? #categoryId : 'all') + " +
+        // "':tag:' + (#tag != null ? #tag : 'all')",
+        // unless = "#result == null || #result.data == null || #result.data.isEmpty()"
+        // )
+        @Cacheable(value = "newsList", key = "'lang:' + (#filter.lang != null ? #filter.lang : 'uz') + " +
+                        "':page:' + #pageable.pageNumber + " +
+                        "':size:' + #pageable.pageSize + " +
+                        "':cat:' + (#filter.categoryId != null ? #filter.categoryId : 'all') + " +
+                        "':tag:' + (#filter.tag != null ? #filter.tag : 'all')", sync = true)
+        @Transactional(readOnly = true)
+        public ApiResponse getPublicNews(
+                        NewsFilter filter, Pageable pageable) {
 
-        log.info("Cache MISS - Fetching from DB with filter={}, page={}",
-                filter, pageable.getPageNumber());
+                log.info("Cache MISS - Fetching from DB with filter={}, page={}",
+                                filter, pageable.getPageNumber());
 
-        // 🔥 PUBLISHED + DATE constraint majburiy
-        filter.setStatus(NewsStatus.PUBLISHED);
-        filter.setDeleted(false);
+                // 🔥 PUBLISHED + DATE constraint majburiy
+                filter.setStatus(NewsStatus.PUBLISHED);
+                filter.setDeleted(false);
 
-        Page<News> page = newsRepository.findAll(filter, pageable);
+                Page<News> page = newsRepository.findAll(filter, pageable);
 
-        if (page.isEmpty()) {
-            return ApiResponse.builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .data(List.of())
-                    .build();
-        }
-        String lang = filter.getLang(); // 🔥 mapping uchun
+                if (page.isEmpty()) {
+                        return ApiResponse.builder()
+                                        .status(HttpStatus.NOT_FOUND)
+                                        .data(List.of())
+                                        .build();
+                }
+                String lang = filter.getLang(); // 🔥 mapping uchun
 
-        List<NewsPublicResponse> responses = page.getContent().stream()
-                .map(news -> newsMapper.toPublicDto(news, lang))
-                .toList();
+                List<NewsPublicResponse> responses = page.getContent().stream()
+                                .map(news -> newsMapper.toPublicDto(news, lang))
+                                .toList();
 
-        return ApiResponse.builder()
-                .status(HttpStatus.OK)
-                .message("Success")
-                .data(responses)
-                .pages(page.getTotalPages())
-                .elements(page.getTotalElements())
-                .build();
-    }
-
-    /**
-     * Get single news by slug
-     */
-    @Cacheable(
-            value = "newsDetail",
-            key = "'slug:' + #slug + ':lang:' + #lang",
-            unless = "#result == null"
-    )
-    public ApiResponse getNewsBySlug(String slug, String lang) {
-
-        log.info("Cache MISS - Fetching from DB: slug={}, lang={}", slug, lang);
-        LocalDateTime now = LocalDateTime.now();
-        News news = newsRepository.findPublicNewsBySlug(slug, lang, now)
-                .orElseThrow(() -> new ResourceNotFoundException("News not found"));
-
-        return ApiResponse.builder()
-                .status(HttpStatus.OK)
-                .data(newsMapper.toPublicDto(news, lang))
-                .build();
-    }
-
-    @Cacheable(
-            value = "categories",
-            key = "'lang:' + #lang",
-            unless = "#result == null || #result.data.isEmpty()"
-    )
-    @Transactional(readOnly = true)
-    public ApiResponse getPublicCategories(String lang) {
-
-        List<Category> categories = categoryRepository.findPublicCategories(lang);
-
-        if (categories.isEmpty()) {
-            return ApiResponse.builder()
-                    .status(HttpStatus.NOT_FOUND)
-                    .data(List.of())
-                    .build();
+                return ApiResponse.builder()
+                                .status(HttpStatus.OK)
+                                .message("Success")
+                                .data(responses)
+                                .pages(page.getTotalPages())
+                                .elements(page.getTotalElements())
+                                .build();
         }
 
-        return ApiResponse.builder()
-                .status(HttpStatus.OK)
-                .data(
-                        categories.stream()
-                                .map(c -> categoryMapper.toPublicDto(c, lang))
-                                .toList()
-                )
-                .build();
-    }
+        // Get single news by slug
+        @Cacheable(value = "newsDetail", key = "'slug:' + #slug + ':lang:' + #lang", unless = "#result == null")
+        // getNewsBySlug
+        public ApiResponse getNewsBySlug(String slug, String lang) {
 
-    @Cacheable(
-            value = "tags",
-            unless = "#result == null || #result.data.isEmpty()"
-    )
-    @Transactional(readOnly = true)
-    public ApiResponse getPublicTags() {
-        List<Tag> tags = tagRepository.findAllByIsActiveTrue();
+                log.info("Cache MISS - Fetching from DB: slug={}, lang={}", slug, lang);
+                LocalDateTime now = LocalDateTime.now();
+                News news = newsRepository.findPublicNewsBySlug(slug, lang, now)
+                                .orElseThrow(() -> new ResourceNotFoundException("News not found"));
 
-        return ApiResponse.builder()
-                .status(HttpStatus.OK)
-                .data(
-                        tags.stream()
-                                .map(Tag::getCode)
-                                .toList()
-                )
-                .build();
-    }
+                return ApiResponse.builder()
+                                .status(HttpStatus.OK)
+                                .data(newsMapper.toPublicDto(news, lang))
+                                .build();
+        }
+
+        @Cacheable(value = "categories", key = "'lang:' + #lang", unless = "#result == null || #result.data.isEmpty()")
+        @Transactional(readOnly = true)
+        // getPublicCategories
+        public ApiResponse getPublicCategories(String lang) {
+
+                List<Category> categories = categoryRepository.findPublicCategories(lang);
+
+                if (categories.isEmpty()) {
+                        return ApiResponse.builder()
+                                        .status(HttpStatus.NOT_FOUND)
+                                        .data(List.of())
+                                        .build();
+                }
+
+                return ApiResponse.builder()
+                                .status(HttpStatus.OK)
+                                .data(
+                                                categories.stream()
+                                                                .map(c -> categoryMapper.toPublicDto(c, lang))
+                                                                .toList())
+                                .build();
+        }
+
+        @Cacheable(value = "tags", unless = "#result == null || #result.data.isEmpty()")
+        @Transactional(readOnly = true)
+        // getPublicTags
+        public ApiResponse getPublicTags() {
+                List<Tag> tags = tagRepository.findAllByIsActiveTrue();
+
+                return ApiResponse.builder()
+                                .status(HttpStatus.OK)
+                                .data(
+                                                tags.stream()
+                                                                .map(Tag::getCode)
+                                                                .toList())
+                                .build();
+        }
 
 }

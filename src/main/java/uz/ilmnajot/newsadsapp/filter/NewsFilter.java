@@ -39,43 +39,49 @@ public class NewsFilter implements Specification<News> {
         }
     }
 
-
+    // setLang
     public void setLang(String lang) {
         if (lang != null && !lang.trim().isEmpty()) {
             this.lang = lang.trim();
         }
     }
 
+    // setTag
     public void setTag(String tag) {
-        if (tag != null && tag.trim().isEmpty()) {
+        if (tag != null && !tag.trim().isEmpty()) {
             this.tag = tag.trim();
         }
     }
 
+    // setAuthorId
     public void setAuthorId(Long authorId) {
         if (authorId != null) {
             this.authorId = authorId;
         }
     }
 
+    // setCategoryId
     public void setCategoryId(Long categoryId) {
         if (categoryId != null) {
             this.categoryId = categoryId;
         }
     }
 
+    // setStatus
     public void setStatus(NewsStatus status) {
         if (status != null) {
             this.status = status;
         }
     }
 
+    // setFeatured
     public void setFeatured(Boolean featured) {
         if (featured != null) {
             this.isFeatured = featured;
         }
     }
 
+    // setDeleted
     public void setDeleted(Boolean deleted) {
         if (deleted != null) {
 
@@ -83,6 +89,7 @@ public class NewsFilter implements Specification<News> {
         }
     }
 
+    // setFrom
     public void setFrom(LocalDate from) {
         if (from != null) {
             this.from = from;
@@ -90,6 +97,7 @@ public class NewsFilter implements Specification<News> {
         }
     }
 
+    // setTo
     public void setTo(LocalDate to) {
         if (to != null) {
             this.to = to;
@@ -99,8 +107,8 @@ public class NewsFilter implements Specification<News> {
 
     @Override
     public Predicate toPredicate(@NotNull Root<News> root,
-                                 CriteriaQuery<?> query,
-                                 @NotNull CriteriaBuilder cb) {
+            CriteriaQuery<?> query,
+            @NotNull CriteriaBuilder cb) {
 
         List<Predicate> predicates = new ArrayList<>();
         query.distinct(true);
@@ -125,9 +133,7 @@ public class NewsFilter implements Specification<News> {
                     cb.or(
                             cb.like(cb.lower(translationJoin.get("title")), pattern),
                             cb.like(cb.lower(translationJoin.get("summary")), pattern),
-                            cb.like(cb.lower(translationJoin.get("content")), pattern)
-                    )
-            );
+                            cb.like(cb.lower(translationJoin.get("content")), pattern)));
         }
 
         // 3️⃣ AUTHOR
@@ -153,39 +159,35 @@ public class NewsFilter implements Specification<News> {
         // 7️⃣ DELETED
         predicates.add(cb.equal(root.get("isDeleted"), isDeleted != null ? isDeleted : false));
 
-//        // 8️⃣ DATE RANGE
-//        if (from != null) {
-//            predicates.add(cb.greaterThanOrEqualTo(
-//                    root.get("createdAt"), from.atStartOfDay()));
-//        }
-//
-//        if (to != null) {
-//            predicates.add(cb.lessThanOrEqualTo(
-//                    root.get("createdAt"), to.atTime(LocalTime.MAX)));
-//        }
+        // // 8️⃣ DATE RANGE
+        // if (from != null) {
+        // predicates.add(cb.greaterThanOrEqualTo(
+        // root.get("createdAt"), from.atStartOfDay()));
+        // }
+        //
+        // if (to != null) {
+        // predicates.add(cb.lessThanOrEqualTo(
+        // root.get("createdAt"), to.atTime(LocalTime.MAX)));
+        // }
 
-//        if (from != null || to != null)
+        // if (from != null || to != null)
         Path<LocalDateTime> dateField = root.get("publishAt");
 
         if (from != null) {
             predicates.add(
                     cb.greaterThanOrEqualTo(
                             dateField,
-                            from.atStartOfDay()
-                    )
-            );
+                            from.atStartOfDay()));
         }
 
         if (to != null) {
             predicates.add(
                     cb.lessThan(
                             dateField,
-                            to.plusDays(1).atStartOfDay()
-                    )
-            );
+                            to.plusDays(1).atStartOfDay()));
         }
-            // query.orderBy(...)
+        // query.orderBy(...)
 
-            return cb.and(predicates.toArray(new Predicate[0]));
+        return cb.and(predicates.toArray(new Predicate[0]));
     }
 }

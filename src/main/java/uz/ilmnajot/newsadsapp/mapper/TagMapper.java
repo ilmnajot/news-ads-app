@@ -10,6 +10,7 @@ import java.util.List;
 @Component
 public class TagMapper {
 
+    // toDto
     public TagDto toDto(Tag tag) {
         return TagDto
                 .builder()
@@ -23,6 +24,7 @@ public class TagMapper {
                 .build();
     }
 
+    // toEntity
     public Tag toEntity(TagDto dto) {
         return Tag
                 .builder()
@@ -30,6 +32,7 @@ public class TagMapper {
                 .build();
     }
 
+    // toDto
     public List<TagDto> toDto(List<Tag> tags) {
         if (tags == null || tags.isEmpty()) {
             return new ArrayList<>();
@@ -39,6 +42,7 @@ public class TagMapper {
                 .map(this::toDto)
                 .toList();
     }
+    // toUpdate
     public void toUpdate(Tag tag, TagDto.UpdateTag dto) {
         if (dto.getCode() != null) {
             tag.setCode(dto.getCode());

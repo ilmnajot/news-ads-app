@@ -2,6 +2,7 @@ package uz.ilmnajot.newsadsapp.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -38,9 +39,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
     private final AdsAssignmentMapper assignmentMapper;
     private final AdsAssignmentRepository adsAssignmentRepository;
 
-    /**
-     * CREATE Assignment
-     */
+    // CREATE Assignment
     @Transactional
     @Override
     public ApiResponse createAssignment(AdsAssignmentDto.CreateAssignment request) {
@@ -89,9 +88,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
                 .build();
     }
 
-    /**
-     * GET All Assignments
-     */
+    // GET All Assignments
     @Override
     public ApiResponse getAllAssignments() {
 
@@ -108,9 +105,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
                 .build();
     }
 
-    /**
-     * GET Assignment by ID
-     */
+    // GET Assignment by ID
     @Override
     public ApiResponse getAssignmentById(Long id) {
 
@@ -124,9 +119,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
                 .build();
     }
 
-    /**
-     * UPDATE Assignment (PUT)
-     */
+    // UPDATE Assignment (PUT)
     @Transactional
     @Override
     public ApiResponse updateAssignment(Long id, AdsAssignmentDto.UpdateAssignment request) {
@@ -177,9 +170,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
                 .build();
     }
 
-    /**
-     * DELETE Assignment
-     */
+    // DELETE Assignment
     @Transactional
     @Override
     public ApiResponse deleteAssignment(Long id) {
@@ -195,6 +186,8 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
     }
 
     @Override
+    @Cacheable(value = "publicAds", key = "'placement:' + #placementCode + ':lang:' + (#lang ?: 'uz') + ':cat:' + (#categoryId ?: 'all')", unless = "#result == null")
+    // findActiveAssignmentsByPlacement
     public ApiResponse findActiveAssignmentsByPlacement(String placementCode, String lang, Long categoryId) {
 
         LocalDateTime now = LocalDateTime.now();
@@ -219,6 +212,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
                 .build();
     }
 
+    // matchesLangFilter
     private boolean matchesLangFilter(AdsAssignment assignment, String lang) {
         if (assignment.getLangFilter() == null || assignment.getLangFilter().isEmpty()) {
             return true; // No filter means all languages
@@ -226,6 +220,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
         return assignment.getLangFilter().contains(lang);
     }
 
+    // matchesCategoryFilter
     private boolean matchesCategoryFilter(AdsAssignment assignment, Long categoryId) {
         if (assignment.getCategoryFilter() == null || assignment.getCategoryFilter().isEmpty()) {
             return true; // No filter means all categories
@@ -236,6 +231,7 @@ public class AdsAssignmentServiceImpl implements AdsAssignmentService {
         return assignment.getCategoryFilter().contains(categoryId);
     }
 
+    // selectByWeight
     private AdsAssignment selectByWeight(List<AdsAssignment> assignments) {
         Random random = new Random();
         int totalWeight = assignments.stream()

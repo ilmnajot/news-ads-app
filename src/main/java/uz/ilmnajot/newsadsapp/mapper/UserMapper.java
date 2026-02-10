@@ -11,6 +11,7 @@ import java.util.List;
 @Component
 public class UserMapper {
 
+    // toDto
     public UserDto toDto(User user) {
         return UserDto
                 .builder()
@@ -32,6 +33,7 @@ public class UserMapper {
                 .build();
     }
 
+    // toEntity
     public User toEntity(UserDto.AddUserDto dto) {
         User user = new User();
         user.setFullName(dto.getFullName());
@@ -41,6 +43,7 @@ public class UserMapper {
         return user;
     }
 
+    // toDto
     public List<UserDto> toDto(List<User> users) {
         if (users == null || users.isEmpty()) {
             return new ArrayList<>();
@@ -51,6 +54,7 @@ public class UserMapper {
                 .toList();
     }
 
+    // toUpdate
     public void toUpdate(User user, UserDto.UpdateDto dto) {
         if (dto.getFullName() != null) {
             user.setFullName(dto.getFullName());

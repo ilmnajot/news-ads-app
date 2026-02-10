@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ResponseStatus(HttpStatus.CONFLICT)
 public class CategorySlugExistsException extends RuntimeException {
+    // CategorySlugExistsException
     public CategorySlugExistsException(String message) {
         super(message);
     }
